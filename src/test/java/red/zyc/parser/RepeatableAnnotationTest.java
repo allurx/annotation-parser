@@ -40,7 +40,7 @@ public class RepeatableAnnotationTest {
     void test() {
 
         int i = 0;
-        int parsed = AnnotationParser.parse(i, new AnnotatedTypeToken<@MyAnnotation(1) @MyAnnotation(2) @MyAnnotation(3) Integer>() {
+        int parsed = AnnotationParser.parse(i, new AnnotatedTypeToken<@Accumulator(1) @Accumulator(2) @Accumulator(3) Integer>() {
         });
 
         Assertions.assertEquals(6, parsed);
@@ -51,25 +51,25 @@ public class RepeatableAnnotationTest {
     @Retention(RetentionPolicy.RUNTIME)
     @Repeatable(RepeatableAnnotation.class)
     @Documented
-    @interface MyAnnotation {
+    @interface Accumulator {
 
         int value();
     }
 
-    @Parse(handler = MyAnnotationHandler.class, annotation = MyAnnotation.class, location = Location.INDIRECTLY_PRESENT)
+    @Parse(handler = AccumulatorHandler.class, annotation = Accumulator.class, location = Location.INDIRECTLY_PRESENT)
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @interface RepeatableAnnotation {
 
-        MyAnnotation[] value();
+        Accumulator[] value();
     }
 
 
-    static class MyAnnotationHandler implements AnnotationHandler<Integer, MyAnnotation> {
+    static class AccumulatorHandler implements AnnotationHandler<Integer, Accumulator> {
 
         @Override
-        public Integer handle(Integer target, MyAnnotation annotation) {
+        public Integer handle(Integer target, Accumulator annotation) {
             return target + annotation.value();
         }
     }
