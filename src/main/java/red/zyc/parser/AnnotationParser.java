@@ -71,10 +71,10 @@ public final class AnnotationParser {
     /**
      * {@link #parse(Object, AnnotatedType)}的包装方法
      *
-     * @param value     待解析的对象
+     * @param value              待解析的对象
      * @param annotatedTypeToken 待解析对象的{@link AnnotatedTypeToken}
-     * @param <T>       待解析对象的类型
-     * @return 解析后的值
+     * @param <T>                待解析对象的类型
+     * @return 解析后的对象
      */
     public static <T> T parse(T value, AnnotatedTypeToken<T> annotatedTypeToken) {
         return parse(value, annotatedTypeToken.getAnnotatedType());
@@ -88,7 +88,7 @@ public final class AnnotationParser {
      * @param annotatedType 待解析对象的{@link AnnotatedType}
      * @param <T>           待解析对象的类型
      * @param <AT>          待解析对象的{@link AnnotatedType}的类型
-     * @return 解析后的值
+     * @return 解析后的对象
      */
     @SuppressWarnings("unchecked")
     public static <T, AT extends AnnotatedType> T parse(T value, AT annotatedType) {

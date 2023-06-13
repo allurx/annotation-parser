@@ -46,7 +46,6 @@ public class RepeatableAnnotationTest {
         Assertions.assertEquals(6, parsed);
     }
 
-
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.RUNTIME)
     @Repeatable(RepeatableAnnotation.class)

@@ -15,13 +15,14 @@
  */
 package red.zyc.parser;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import red.zyc.parser.annotation.EraseString;
-import red.zyc.parser.type.Cascade;
 import red.zyc.parser.type.AnnotatedTypeToken;
+import red.zyc.parser.type.Cascade;
 
 import java.lang.reflect.Field;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * 解析对象{@link Field}上的注解
@@ -37,8 +38,8 @@ public class CascadeTest {
         var parsed = AnnotationParser.parse(boy, new AnnotatedTypeToken<@Cascade Boy>() {
         });
 
-        Assertions.assertEquals("******", parsed.name);
-        Assertions.assertEquals("******", parsed.girl.name);
+        assertEquals("******", parsed.name);
+        assertEquals("******", parsed.girl.name);
     }
 
     record Boy(@EraseString String name, @Cascade Girl girl) {

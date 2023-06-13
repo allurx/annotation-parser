@@ -18,6 +18,7 @@ package red.zyc.parser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import red.zyc.parser.handler.AnnotationHandler;
+import red.zyc.parser.handler.Location;
 import red.zyc.parser.handler.Parse;
 import red.zyc.parser.type.AnnotatedTypeToken;
 
@@ -38,18 +39,18 @@ public class InheritedAnnotationTest {
     @Test
     void test() {
         var sub = new Sub();
-        var parsed = AnnotationParser.parse(sub, new AnnotatedTypeToken<@Parse(handler = MyAnnotationHandler.class, annotation = MyAnnotation.class) Sub>() {
+        var parsed = AnnotationParser.parse(sub, new AnnotatedTypeToken<@Accumulator(1) Sub>() {
         });
 
-        Assertions.assertEquals(1, parsed.i);
+        Assertions.assertEquals(3, parsed.i);
     }
 
-
+    @Parse(handler = AccumulatorHandler.class, annotation = Accumulator.class, location = Location.PRESENT)
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @Inherited
-    @interface MyAnnotation {
+    @interface Accumulator {
 
         int value();
     }
@@ -58,17 +59,17 @@ public class InheritedAnnotationTest {
         int i = 0;
     }
 
-    @MyAnnotation(1)
+    @Accumulator(2)
     static class Super {
 
     }
 
-    static class MyAnnotationHandler implements AnnotationHandler<Sub, MyAnnotation> {
+    static class AccumulatorHandler implements AnnotationHandler<Sub, Accumulator> {
 
         @Override
-        public Sub handle(Sub target, MyAnnotation annotation) {
-            target.i += annotation.value();
-            return target;
+        public Sub handle(Sub sub, Accumulator annotation) {
+            sub.i += annotation.value();
+            return sub;
         }
     }
 }

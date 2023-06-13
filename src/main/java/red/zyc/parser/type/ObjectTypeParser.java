@@ -22,19 +22,14 @@ import red.zyc.parser.handler.Parse;
 import red.zyc.parser.support.InstanceCreators;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.AnnotatedType;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 /**
- * <ol>
- *     <li>如果对象上<b>直接存在</b>{@link Parse}注解，则根据该对象的{@link Class}解析该对象</li>
- *     <li>否则找出对象上所有<b>直接存在</b>且被{@link Parse}直接标记的注解，并按照这些注解出现的顺序解析对象</li>
- * </ol>
+ * 找出对象上所有被{@link Parse}标记的注解，并按照这些注解出现的顺序解析对象
  *
  * @author zyc
  * @see Parse
@@ -44,14 +39,11 @@ public class ObjectTypeParser implements TypeParser<Object, AnnotatedType> {
 
     @Override
     public Object parse(Object value, AnnotatedType annotatedType) {
-        return Optional.ofNullable(annotatedType.getDeclaredAnnotation(Parse.class))
-                .map(parsed -> Stream.of(new ParsedElement(parsed, value.getClass())))
-                .orElse(Arrays.stream(annotatedType.getDeclaredAnnotations())
-                        .map(annotation -> annotation.annotationType().getDeclaredAnnotation(Parse.class))
-                        .filter(Objects::nonNull)
-                        .map(parsed -> new ParsedElement(parsed, annotatedType)))
-                .map(parsedElement -> locateAnnotation(parsedElement.parse, parsedElement.annotatedElement))
-                .reduce(value, (v, metadata) -> metadata.annotations.stream().reduce(v, metadata.annotationHandler::handle, (v1, v2) -> null), (v1, v2) -> null);
+        return Arrays.stream(annotatedType.getDeclaredAnnotations())
+                .map(annotation -> annotation.annotationType().getDeclaredAnnotation(Parse.class))
+                .filter(Objects::nonNull)
+                .map(parse -> parseAnnotation(value, annotatedType, parse))
+                .reduce(value, (o, parsedInfo) -> parsedInfo.annotations.stream().reduce(value, parsedInfo.annotationHandler::handle, (v1, v2) -> null), (v1, v2) -> null);
     }
 
     @Override
@@ -65,38 +57,34 @@ public class ObjectTypeParser implements TypeParser<Object, AnnotatedType> {
     }
 
     /**
-     * 定位目标对象上符合条件的所有注解
+     * 解析目标对象上符合条件的所有注解
      *
-     * @param parse           {@link Parse}
-     * @param annotatedElement {@link AnnotatedElement}
+     * @param value         待解析的对象
+     * @param annotatedType {@link AnnotatedType}
+     * @param parse         {@link Parse}
      * @return {@link ParsedInfo}
      */
-    private ParsedInfo locateAnnotation(Parse parse, AnnotatedElement annotatedElement) {
+    private ParsedInfo parseAnnotation(Object value, AnnotatedType annotatedType, Parse parse) {
         @SuppressWarnings("unchecked")
         var annotationHandler = (AnnotationHandler<Object, Annotation>) InstanceCreators.getInstanceCreator(parse.handler()).create();
         var set = new HashSet<Annotation>();
         for (Location location : parse.location()) {
             switch (location) {
                 case DIRECTLY_PRESENT ->
-                        Optional.ofNullable(annotatedElement.getDeclaredAnnotation(parse.annotation())).ifPresent(set::add);
+                        Optional.ofNullable(annotatedType.getDeclaredAnnotation(parse.annotation())).ifPresent(set::add);
                 case INDIRECTLY_PRESENT ->
-                        set.addAll(Arrays.asList(annotatedElement.getDeclaredAnnotationsByType(parse.annotation())));
-                case PRESENT ->
-                        Optional.ofNullable(annotatedElement.getAnnotation(parse.annotation())).ifPresent(set::add);
-                case ASSOCIATED ->
-                        set.addAll(Arrays.asList(annotatedElement.getAnnotationsByType(parse.annotation())));
+                        set.addAll(Arrays.asList(annotatedType.getDeclaredAnnotationsByType(parse.annotation())));
+                case PRESENT -> {
+                    Optional.ofNullable(annotatedType.getAnnotation(parse.annotation())).ifPresent(set::add);
+                    Optional.ofNullable(value.getClass().getAnnotation(parse.annotation())).ifPresent(set::add);
+                }
+                case ASSOCIATED -> {
+                    set.addAll(Arrays.asList(annotatedType.getAnnotationsByType(parse.annotation())));
+                    set.addAll(Arrays.asList(value.getClass().getAnnotationsByType(parse.annotation())));
+                }
             }
         }
         return new ParsedInfo(set, annotationHandler);
-    }
-
-    /**
-     * 待解析的元素
-     *
-     * @param parse           {@link Parse}
-     * @param annotatedElement 待解析的元素
-     */
-    record ParsedElement(Parse parse, AnnotatedElement annotatedElement) {
     }
 
     /**

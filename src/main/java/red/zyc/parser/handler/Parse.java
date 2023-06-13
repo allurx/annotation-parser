@@ -22,20 +22,15 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.reflect.AnnotatedType;
 
 /**
- * 探测并处理{@link #annotation()}，该注解有两种使用方式：
- * <ol>
- *     <li>标注在{@link ElementType#TYPE_USE}上时，则根据该类型所代表的{@link Class}探测并处理{@link #annotation()}</li>
- *     <li>标注在注解上时，则根据{@link AnnotatedType}探测并处理{@link #annotation()}</li>
- * </ol>
+ * 探测并处理{@link #annotation()}
  *
  * @author zyc
  * @see AnnotationHandler
  * @see Location
  */
-@Target(ElementType.TYPE_USE)
+@Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Parse {
@@ -53,6 +48,6 @@ public @interface Parse {
     /**
      * @return {@link #annotation()}以何种形式存在于对象上
      */
-    Location[] location() default Location.PRESENT;
+    Location[] location() default Location.DIRECTLY_PRESENT;
 
 }
