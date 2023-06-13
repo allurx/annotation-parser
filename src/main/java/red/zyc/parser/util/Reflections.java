@@ -120,11 +120,11 @@ public final class Reflections {
      * @param <T>            构造器代表的对象类型
      * @return 带有指定参数的构造器
      */
-    public static <T> Optional<Constructor<T>> getDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes) {
+    public static <T> Constructor<T> getDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes) {
         try {
-            return Optional.of(clazz.getDeclaredConstructor(parameterTypes));
+            return clazz.getDeclaredConstructor(parameterTypes);
         } catch (NoSuchMethodException e) {
-            return Optional.empty();
+            return null;
         }
     }
 

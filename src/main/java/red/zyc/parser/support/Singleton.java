@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package red.zyc.parser.support;
 
-package red.zyc.parser.exception;
-
-import java.util.Collection;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * 没有遵守{@link Collection}定义规范
+ * 单例对象
  *
  * @author zyc
- * @see Collection
  */
-public class UnsupportedCollectionException extends AnnotationParseException {
-
-    public UnsupportedCollectionException(String message) {
-        super(message);
-    }
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface Singleton {
 }

@@ -17,8 +17,6 @@
 package red.zyc.parser.support;
 
 import red.zyc.parser.exception.AnnotationParseException;
-import red.zyc.parser.exception.UnsupportedCollectionException;
-import red.zyc.parser.exception.UnsupportedMapException;
 import red.zyc.parser.util.Reflections;
 
 import java.util.ArrayList;
@@ -40,31 +38,27 @@ public final class InstanceCreators {
     private static final Map<?, ?> EMPTY_MAP = new HashMap<>();
     private static final List<?> EMPTY_LIST = new ArrayList<>();
     private static final Map<Class<?>, InstanceCreator<?>> INSTANCE_CREATORS = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, Object> SINGLETONS = new ConcurrentHashMap<>();
+
 
     private InstanceCreators() {
     }
 
     /**
-     * 获取指定{@link Class}的实例创建器，尝试获取的顺序如下：
-     * <ol>
-     *     <li>如果{@link InstanceCreators#INSTANCE_CREATORS}中已存在该类型的实例创建器则直接返回。</li>
-     *     <li>如果该类型存在无参构造器，则通过该构造器来生成实例创建器，然后存放到{@link InstanceCreators#INSTANCE_CREATORS}中。</li>
-     *     <li>如果该类型是{@link Collection}或者{@link Map}类型则尝试获取其带有一个{@link Collection}或者{@link Map}
-     *     类型参数的构造器来生成实例创建器，具体原因请参照{@link Collection}或者{@link Map}的定义规范，
-     *     然后存放到{@link InstanceCreators#INSTANCE_CREATORS}中。
-     *     </li>
-     * </ol>
+     * 获取指定{@link Class}的实例创建器，如果指定{@link Class}被{@link Singleton}标注，
+     * 则该对象只会被创建一次。
      *
      * @param clazz 指定的{@link Class}
-     * @param <T>   指定的{@link Class}的实例类型
-     * @return {@link Class}代表的对象实例创建器
+     * @param <T>   指定{@link Class}的类型
+     * @return {@link Class}的实例创建器
      */
     @SuppressWarnings("unchecked")
     public static <T> InstanceCreator<T> getInstanceCreator(Class<T> clazz) {
-        return (InstanceCreator<T>) INSTANCE_CREATORS.computeIfAbsent(clazz, c ->
-                Optional.ofNullable(noArgsConstructor(clazz))
-                        .or(() -> Optional.ofNullable(collectionOrMapConstructor(clazz)))
-                        .orElseThrow(() -> new AnnotationParseException(String.format("无法创建%s的实例，请为该class添加一个InstanceCreator", clazz))));
+        if (clazz.isAnnotationPresent(Singleton.class)) {
+            return () -> (T) SINGLETONS.computeIfAbsent(clazz, c -> findInstanceCreator(clazz).create());
+        } else {
+            return findInstanceCreator(clazz);
+        }
     }
 
     /**
@@ -100,33 +94,56 @@ public final class InstanceCreators {
     }
 
     /**
+     * 获取指定{@link Class}的实例创建器，尝试获取的顺序如下：
+     * <ol>
+     *     <li>如果{@link InstanceCreators#INSTANCE_CREATORS}中已存在该类型的实例创建器则直接返回。</li>
+     *     <li>如果该类型存在无参构造器，则通过该构造器来生成实例创建器，然后存放到{@link InstanceCreators#INSTANCE_CREATORS}中。</li>
+     *     <li>如果该类型是{@link Collection}或者{@link Map}类型则尝试获取其带有一个{@link Collection}或者{@link Map}
+     *     类型参数的构造器来生成实例创建器，具体原因请参照{@link Collection}或者{@link Map}的定义规范，
+     *     然后存放到{@link InstanceCreators#INSTANCE_CREATORS}中。
+     *     </li>
+     * </ol>
+     *
+     * @param clazz 指定{@link Class}
+     * @param <T>   指定{@link Class}的类型
+     * @return 指定{@link Class}的实例创建器
+     */
+    @SuppressWarnings("unchecked")
+    private static <T> InstanceCreator<T> findInstanceCreator(Class<T> clazz) {
+        return (InstanceCreator<T>) INSTANCE_CREATORS.computeIfAbsent(clazz, c ->
+                Optional.ofNullable(createByNoArgsConstructor(clazz))
+                        .or(() -> Optional.ofNullable(createByCollectionOrMapConstructor(clazz)))
+                        .orElseThrow(() -> new AnnotationParseException(String.format("无法创建%s的实例，请为该class添加一个InstanceCreator", clazz))));
+    }
+
+    /**
      * 获取指定{@link Class}的无参构造器
      *
      * @param clazz 对象的{@link Class}
      * @param <T>   对象的类型
      * @return 该对象的实例创建器
      */
-    private static <T> InstanceCreator<T> noArgsConstructor(Class<T> clazz) {
-        return Reflections.getDeclaredConstructor(clazz)
+    private static <T> InstanceCreator<T> createByNoArgsConstructor(Class<T> clazz) {
+        return Optional.ofNullable(Reflections.getDeclaredConstructor(clazz))
                 .<InstanceCreator<T>>map(constructor -> () -> Reflections.newInstance(constructor)).orElse(null);
     }
 
     /**
-     * 获取{@link Collection}或者{@link Map}类型对象的构造器
+     * 获取遵循{@link Collection}和{@link Map}定义规范的实例创建器
      *
      * @param clazz 对象的{@link Class}
      * @param <T>   对象的类型
      * @return 该对象的实例创建器
      */
-    private static <T> InstanceCreator<T> collectionOrMapConstructor(Class<T> clazz) {
+    private static <T> InstanceCreator<T> createByCollectionOrMapConstructor(Class<T> clazz) {
         if (Collection.class.isAssignableFrom(clazz)) {
-            return Reflections.getDeclaredConstructor(clazz, Collection.class)
+            return Optional.ofNullable(Reflections.getDeclaredConstructor(clazz, Collection.class))
                     .<InstanceCreator<T>>map(constructor -> () -> Reflections.newInstance(constructor, EMPTY_LIST))
-                    .orElseThrow(() -> new UnsupportedCollectionException(String.format("%s必须遵守Collection中的约定，定义一个无参构造函数和带有一个Collection类型参数的构造函数。", clazz)));
+                    .orElse(null);
         } else if (Map.class.isAssignableFrom(clazz)) {
-            return Reflections.getDeclaredConstructor(clazz, Map.class)
+            return Optional.ofNullable(Reflections.getDeclaredConstructor(clazz, Map.class))
                     .<InstanceCreator<T>>map(constructor -> () -> Reflections.newInstance(constructor, EMPTY_MAP))
-                    .orElseThrow(() -> new UnsupportedMapException(String.format("%s必须遵守Map中的约定，定义一个无参构造函数和带有一个Map类型参数的构造函数。", clazz)));
+                    .orElse(null);
         }
         return null;
     }
