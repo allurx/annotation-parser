@@ -36,17 +36,20 @@ public final class Reflections {
     }
 
     /**
-     * 获取目标对象以及所有父类定义的 {@link Field}。
+     * 获取目标对象上的{@link Field}
      *
      * @param targetClass 目标对象的{@link Class}
-     * @return 目标对象以及所有父类定义的 {@link Field}
+     * @param inherited   是否获取从父类继承的{@link Field}
+     * @return 目标对象上的 {@link Field}
      */
-    public static List<Field> listAllFields(Class<?> targetClass) {
+    public static List<Field> listFields(Class<?> targetClass, boolean inherited) {
         return Optional.ofNullable(targetClass)
                 .filter(clazz -> clazz != Object.class)
                 .map(clazz -> {
                     List<Field> fields = Stream.of(clazz.getDeclaredFields()).collect(Collectors.toList());
-                    fields.addAll(listAllFields(clazz.getSuperclass()));
+                    if (inherited) {
+                        fields.addAll(listFields(clazz.getSuperclass(), true));
+                    }
                     return fields;
                 }).orElseGet(ArrayList::new);
     }

@@ -45,9 +45,10 @@ public class CascadeTypeParser implements TypeParser<Object, AnnotatedType> {
             var constructor = Optional.ofNullable(Reflections.getDeclaredConstructor(clazz, Arrays.stream(recordComponents).map(RecordComponent::getType).toArray(Class<?>[]::new))).orElseThrow();
             return Reflections.newInstance(constructor, componentValues);
         } else {
-            return Reflections.listAllFields(clazz).parallelStream()
+            Cascade cascade = annotatedType.getDeclaredAnnotation(Cascade.class);
+            return Reflections.listFields(clazz, cascade.inherited()).parallelStream()
                     .filter(field -> !(Modifier.isFinal(field.getModifiers()) && Modifier.isStatic(field.getModifiers())))
-                    .reduce(InstanceCreators.find(clazz).create(),
+                    .reduce(clazz.isEnum() ? value : InstanceCreators.find(clazz).create(),
                             (o, field) -> {
                                 var fieldValue = Reflections.getFieldValue(value, field);
                                 Reflections.setFieldValue(o, field, AnnotationParser.parse(fieldValue, field.getAnnotatedType()));

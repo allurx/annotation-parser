@@ -21,9 +21,10 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Field;
 
 /**
- * 被该注解标记的对象表明需要对其内部域值进行解析处理。
+ * 被该注解标记的对象表明需要对其{@link Field}进行解析处理。
  *
  * @author zyc
  */
@@ -31,4 +32,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Cascade {
+
+    /**
+     * 是否解析从父类继承的{@link Field}
+     *
+     * @return 是否解析从父类继承的 {@link Field}
+     */
+    boolean inherited() default false;
 }
