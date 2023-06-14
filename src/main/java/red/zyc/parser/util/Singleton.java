@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package red.zyc.parser.util;
 
-package red.zyc.parser.exception;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * 解析注解时发生异常
+ * 如果{@link Class}上<b>存在</b>该注解，{@link InstanceCreator}运行期间只会创建一个这个类的实例
  *
  * @author zyc
  */
-public class AnnotationParseException extends RuntimeException {
-
-    public AnnotationParseException(String message) {
-        super(message);
-    }
-
-    public AnnotationParseException(String message, Throwable cause) {
-        super(message, cause);
-    }
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface Singleton {
 }

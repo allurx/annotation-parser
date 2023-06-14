@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package red.zyc.parser.support;
+package red.zyc.parser.util;
 
 /**
  * 用户可以通过该接口定义特定类型的实例创建器，例如有以下对象定义：
@@ -43,6 +43,7 @@ package red.zyc.parser.support;
  *
  * @param <T> 实例类型
  * @author zyc
+ * @see Singleton
  */
 @FunctionalInterface
 public interface InstanceCreator<T> {
@@ -50,7 +51,7 @@ public interface InstanceCreator<T> {
     /**
      * 创建指定类型的实例
      *
-     * @return 类型 {@link T}的默认实例
+     * @return 类型 {@link T}的实例
      */
     T create();
 }

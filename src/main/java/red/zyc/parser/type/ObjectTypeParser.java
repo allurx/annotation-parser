@@ -19,7 +19,7 @@ package red.zyc.parser.type;
 import red.zyc.parser.handler.AnnotationHandler;
 import red.zyc.parser.handler.Location;
 import red.zyc.parser.handler.Parse;
-import red.zyc.parser.support.InstanceCreators;
+import red.zyc.parser.util.InstanceCreators;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
@@ -66,7 +66,7 @@ public class ObjectTypeParser implements TypeParser<Object, AnnotatedType> {
      */
     private ParsedInfo parseAnnotation(Object value, AnnotatedType annotatedType, Parse parse) {
         @SuppressWarnings("unchecked")
-        var annotationHandler = (AnnotationHandler<Object, Annotation>) InstanceCreators.getInstanceCreator(parse.handler()).create();
+        var annotationHandler = (AnnotationHandler<Object, Annotation>) InstanceCreators.find(parse.handler()).create();
         var set = new HashSet<Annotation>();
         for (Location location : parse.location()) {
             switch (location) {

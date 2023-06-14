@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package red.zyc.parser.support;
+package red.zyc.parser.util;
 
-import red.zyc.parser.exception.AnnotationParseException;
-import red.zyc.parser.util.Reflections;
-
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,7 +38,6 @@ public final class InstanceCreators {
     private static final Map<Class<?>, InstanceCreator<?>> INSTANCE_CREATORS = new ConcurrentHashMap<>();
     private static final Map<Class<?>, Object> SINGLETONS = new ConcurrentHashMap<>();
 
-
     private InstanceCreators() {
     }
 
@@ -53,11 +50,11 @@ public final class InstanceCreators {
      * @return {@link Class}的实例创建器
      */
     @SuppressWarnings("unchecked")
-    public static <T> InstanceCreator<T> getInstanceCreator(Class<T> clazz) {
+    public static <T> InstanceCreator<T> find(Class<T> clazz) {
         if (clazz.isAnnotationPresent(Singleton.class)) {
-            return () -> (T) SINGLETONS.computeIfAbsent(clazz, c -> findInstanceCreator(clazz).create());
+            return (InstanceCreator<T>) INSTANCE_CREATORS.computeIfAbsent(clazz, c -> () -> SINGLETONS.computeIfAbsent(c, cc -> findInstanceCreator(cc).create()));
         } else {
-            return findInstanceCreator(clazz);
+            return (InstanceCreator<T>) INSTANCE_CREATORS.computeIfAbsent(clazz, c -> findInstanceCreator(clazz));
         }
     }
 
@@ -96,28 +93,24 @@ public final class InstanceCreators {
     /**
      * 获取指定{@link Class}的实例创建器，尝试获取的顺序如下：
      * <ol>
-     *     <li>如果{@link InstanceCreators#INSTANCE_CREATORS}中已存在该类型的实例创建器则直接返回。</li>
-     *     <li>如果该类型存在无参构造器，则通过该构造器来生成实例创建器，然后存放到{@link InstanceCreators#INSTANCE_CREATORS}中。</li>
+     *     <li>如果该类型存在无参构造器，则通过该构造器来生成实例创建器。</li>
      *     <li>如果该类型是{@link Collection}或者{@link Map}类型则尝试获取其带有一个{@link Collection}或者{@link Map}
-     *     类型参数的构造器来生成实例创建器，具体原因请参照{@link Collection}或者{@link Map}的定义规范，
-     *     然后存放到{@link InstanceCreators#INSTANCE_CREATORS}中。
+     *     类型参数的构造器来生成实例创建器，具体原因请参照{@link Collection}或者{@link Map}的定义规范。
      *     </li>
      * </ol>
      *
      * @param clazz 指定{@link Class}
      * @param <T>   指定{@link Class}的类型
-     * @return 指定{@link Class}的实例创建器
+     * @return 指定 {@link Class}的实例创建器
      */
-    @SuppressWarnings("unchecked")
     private static <T> InstanceCreator<T> findInstanceCreator(Class<T> clazz) {
-        return (InstanceCreator<T>) INSTANCE_CREATORS.computeIfAbsent(clazz, c ->
-                Optional.ofNullable(createByNoArgsConstructor(clazz))
-                        .or(() -> Optional.ofNullable(createByCollectionOrMapConstructor(clazz)))
-                        .orElseThrow(() -> new AnnotationParseException(String.format("无法创建%s的实例，请为该class添加一个InstanceCreator", clazz))));
+        return Optional.ofNullable(createByNoArgsConstructor(clazz))
+                .or(() -> Optional.ofNullable(createByCollectionOrMapConstructor(clazz)))
+                .orElseThrow(() -> new UnableCreateInstanceException(String.format("无法创建%s的实例，请为该class添加一个InstanceCreator", clazz)));
     }
 
     /**
-     * 获取指定{@link Class}的无参构造器
+     * 通过{@link Class}的{@link Constructor 无参构造器}创建实例
      *
      * @param clazz 对象的{@link Class}
      * @param <T>   对象的类型
@@ -129,7 +122,7 @@ public final class InstanceCreators {
     }
 
     /**
-     * 获取遵循{@link Collection}和{@link Map}定义规范的实例创建器
+     * 通过遵循{@link Collection}和{@link Map}定义规范的{@link Constructor 构造器}创建实例
      *
      * @param clazz 对象的{@link Class}
      * @param <T>   对象的类型

@@ -16,8 +16,6 @@
 
 package red.zyc.parser.util;
 
-import red.zyc.parser.exception.AnnotationParseException;
-
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -68,7 +66,7 @@ public final class Reflections {
             field.setAccessible(true);
             return field.get(target);
         } catch (Exception e) {
-            throw new AnnotationParseException(String.format("获取%s的域%s失败。", target.getClass(), field.getName()), e);
+            throw new ReflectionException(String.format("获取%s的域%s失败。", target.getClass(), field.getName()), e);
         }
     }
 
@@ -88,7 +86,7 @@ public final class Reflections {
             field.setAccessible(true);
             field.set(target, newValue);
         } catch (Exception e) {
-            throw new AnnotationParseException(String.format("%s的域%s赋值失败。", target.getClass(), field.getName()), e);
+            throw new ReflectionException(String.format("%s的域%s赋值失败。", target.getClass(), field.getName()), e);
         }
     }
 
@@ -108,7 +106,7 @@ public final class Reflections {
             method.setAccessible(true);
             return method.invoke(target, args);
         } catch (Exception e) {
-            throw new AnnotationParseException(String.format("执行方法%s失败。", method), e);
+            throw new ReflectionException(String.format("执行方法%s失败。", method), e);
         }
     }
 
@@ -143,7 +141,7 @@ public final class Reflections {
             }
             return constructor.newInstance(args);
         } catch (Exception e) {
-            throw new AnnotationParseException(String.format("构造器%s通过参数%s实例化失败", constructor, Arrays.toString(args)), e);
+            throw new ReflectionException(String.format("构造器%s通过参数%s实例化失败", constructor, Arrays.toString(args)), e);
         }
     }
 

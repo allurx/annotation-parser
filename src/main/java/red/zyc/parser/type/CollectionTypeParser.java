@@ -18,7 +18,7 @@ package red.zyc.parser.type;
 
 
 import red.zyc.parser.AnnotationParser;
-import red.zyc.parser.support.InstanceCreators;
+import red.zyc.parser.util.InstanceCreators;
 import red.zyc.parser.util.Reflections;
 
 import java.lang.reflect.AnnotatedParameterizedType;
@@ -36,7 +36,7 @@ public class CollectionTypeParser implements TypeParser<Collection<Object>, Anno
     @Override
     public Collection<Object> parse(Collection<Object> value, AnnotatedParameterizedType annotatedParameterizedType) {
         return value.parallelStream().map(o -> AnnotationParser.parse(o, annotatedParameterizedType.getAnnotatedActualTypeArguments()[0]))
-                .collect(Collectors.toCollection(() -> InstanceCreators.getInstanceCreator(Reflections.getClass(value)).create()));
+                .collect(Collectors.toCollection(() -> InstanceCreators.find(Reflections.getClass(value)).create()));
     }
 
     @Override

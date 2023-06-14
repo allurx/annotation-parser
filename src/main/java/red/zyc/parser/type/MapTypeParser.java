@@ -17,7 +17,7 @@
 package red.zyc.parser.type;
 
 import red.zyc.parser.AnnotationParser;
-import red.zyc.parser.support.InstanceCreators;
+import red.zyc.parser.util.InstanceCreators;
 import red.zyc.parser.util.Reflections;
 
 import java.lang.reflect.AnnotatedParameterizedType;
@@ -38,7 +38,7 @@ public class MapTypeParser implements TypeParser<Map<Object, Object>, AnnotatedP
         return value.entrySet().parallelStream().collect(Collectors.collectingAndThen(Collectors.toMap(
                 entry -> AnnotationParser.parse(entry.getKey(), annotatedActualTypeArguments[0]),
                 entry -> AnnotationParser.parse(entry.getValue(), annotatedActualTypeArguments[1])), erased -> {
-            Map<Object, Object> map = InstanceCreators.getInstanceCreator(Reflections.getClass(value)).create();
+            Map<Object, Object> map = InstanceCreators.find(Reflections.getClass(value)).create();
             map.putAll(erased);
             return map;
         }));

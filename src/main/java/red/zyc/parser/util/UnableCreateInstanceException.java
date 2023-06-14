@@ -13,28 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
-package red.zyc.parser.handler;
-
-import java.lang.annotation.Annotation;
+package red.zyc.parser.util;
 
 /**
- * 注解处理程序
- *
- * @param <T> 对象的类型
- * @param <A> 标注在对象上的注解类型
  * @author zyc
- * @see Parse
  */
-public interface AnnotationHandler<T, A extends Annotation> {
+public class UnableCreateInstanceException extends RuntimeException {
 
-    /**
-     * 处理目标对象与该对象上的注解
-     *
-     * @param target     目标对象
-     * @param annotation 对象上的注解
-     * @return 处理后的结果
-     */
-    T handle(T target, A annotation);
+    public UnableCreateInstanceException(String message) {
+        super(message);
+    }
 }

@@ -18,7 +18,7 @@ package red.zyc.parser.type;
 
 
 import red.zyc.parser.AnnotationParser;
-import red.zyc.parser.support.InstanceCreators;
+import red.zyc.parser.util.InstanceCreators;
 import red.zyc.parser.util.Reflections;
 
 import java.lang.reflect.AnnotatedType;
@@ -47,7 +47,7 @@ public class CascadeTypeParser implements TypeParser<Object, AnnotatedType> {
         } else {
             return Reflections.listAllFields(clazz).parallelStream()
                     .filter(field -> !(Modifier.isFinal(field.getModifiers()) && Modifier.isStatic(field.getModifiers())))
-                    .reduce(InstanceCreators.getInstanceCreator(clazz).create(),
+                    .reduce(InstanceCreators.find(clazz).create(),
                             (o, field) -> {
                                 var fieldValue = Reflections.getFieldValue(value, field);
                                 Reflections.setFieldValue(o, field, AnnotationParser.parse(fieldValue, field.getAnnotatedType()));
