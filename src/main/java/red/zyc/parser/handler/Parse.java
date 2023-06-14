@@ -38,7 +38,7 @@ public @interface Parse {
     /**
      * @return {@link #annotation()}的处理器
      */
-    Class<? extends AnnotationHandler<?, ? extends Annotation>> handler();
+    Class<? extends AnnotationHandler<?, ? extends Annotation, ?>> handler();
 
     /**
      * @return 需要被解析的注解类型

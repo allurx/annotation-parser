@@ -64,7 +64,7 @@ public class InheritedAnnotationTest {
 
     }
 
-    static class AccumulatorHandler implements AnnotationHandler<Sub, Accumulator> {
+    static class AccumulatorHandler implements AnnotationHandler<Sub, Accumulator, Sub> {
 
         @Override
         public Sub handle(Sub sub, Accumulator annotation) {

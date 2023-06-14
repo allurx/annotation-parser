@@ -21,7 +21,7 @@ import red.zyc.parser.annotation.EraseString;
 /**
  * @author zyc
  */
-public class EraseStringAnnotationHandler implements AnnotationHandler<String, EraseString> {
+public class EraseStringAnnotationHandler implements AnnotationHandler<String, EraseString, String> {
 
     @Override
     public String handle(String target, EraseString annotation) {

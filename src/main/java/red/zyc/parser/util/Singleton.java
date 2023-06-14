@@ -22,9 +22,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 如果{@link Class}上<b>存在</b>该注解，{@link InstanceCreator}运行期间只会创建一个这个类的实例
+ * 满足以下条件之一，{@link InstanceCreator}运行期间只会创建一个这个类的实例。
+ * <ul>
+ *     <li>{@link Class}上<b>存在</b>该注解</li>
+ *     <li>{@link Class#getInterfaces()}中的任意一个类上<b>存在</b>该注解</li>
+ * </ul>
  *
  * @author zyc
+ * @see InstanceCreator
+ * @see InstanceCreators
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

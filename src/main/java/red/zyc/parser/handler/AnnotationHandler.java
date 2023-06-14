@@ -17,17 +17,21 @@
 
 package red.zyc.parser.handler;
 
+import red.zyc.parser.util.Singleton;
+
 import java.lang.annotation.Annotation;
 
 /**
  * 注解处理程序
  *
- * @param <T> 对象的类型
+ * @param <T> 待处理的对象类型
  * @param <A> 标注在对象上的注解类型
+ * @param <R> 处理的结果类型
  * @author zyc
  * @see Parse
  */
-public interface AnnotationHandler<T, A extends Annotation> {
+@Singleton
+public interface AnnotationHandler<T, A extends Annotation, R> {
 
     /**
      * 处理目标对象与该对象上的注解
@@ -36,5 +40,5 @@ public interface AnnotationHandler<T, A extends Annotation> {
      * @param annotation 对象上的注解
      * @return 处理后的结果
      */
-    T handle(T target, A annotation);
+    R handle(T target, A annotation);
 }

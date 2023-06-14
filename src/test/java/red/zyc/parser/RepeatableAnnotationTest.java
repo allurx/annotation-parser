@@ -65,7 +65,7 @@ public class RepeatableAnnotationTest {
     }
 
 
-    static class AccumulatorHandler implements AnnotationHandler<Integer, Accumulator> {
+    static class AccumulatorHandler implements AnnotationHandler<Integer, Accumulator, Integer> {
 
         @Override
         public Integer handle(Integer target, Accumulator annotation) {

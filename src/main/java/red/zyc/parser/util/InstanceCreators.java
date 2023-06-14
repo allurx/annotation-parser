@@ -18,6 +18,7 @@ package red.zyc.parser.util;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author zyc
  * @see InstanceCreator
+ * @see Singleton
  */
 public final class InstanceCreators {
 
@@ -42,8 +44,7 @@ public final class InstanceCreators {
     }
 
     /**
-     * 获取指定{@link Class}的实例创建器，如果指定{@link Class}被{@link Singleton}标注，
-     * 则该对象只会被创建一次。
+     * 获取指定{@link Class}的实例创建器
      *
      * @param clazz 指定的{@link Class}
      * @param <T>   指定{@link Class}的类型
@@ -51,11 +52,13 @@ public final class InstanceCreators {
      */
     @SuppressWarnings("unchecked")
     public static <T> InstanceCreator<T> find(Class<T> clazz) {
-        if (clazz.isAnnotationPresent(Singleton.class)) {
-            return (InstanceCreator<T>) INSTANCE_CREATORS.computeIfAbsent(clazz, c -> () -> SINGLETONS.computeIfAbsent(c, cc -> findInstanceCreator(cc).create()));
-        } else {
-            return (InstanceCreator<T>) INSTANCE_CREATORS.computeIfAbsent(clazz, c -> findInstanceCreator(clazz));
-        }
+        return (InstanceCreator<T>) INSTANCE_CREATORS.computeIfAbsent(clazz, c -> {
+            if (isSingleton(c)) {
+                return () -> SINGLETONS.computeIfAbsent(c, cc -> findInstanceCreator(cc).create());
+            } else {
+                return findInstanceCreator(c);
+            }
+        });
     }
 
     /**
@@ -139,5 +142,19 @@ public final class InstanceCreators {
                     .orElse(null);
         }
         return null;
+    }
+
+    /**
+     * 判断{@link Class}是否是单例
+     *
+     * @param clazz {@link Class}
+     * @return 是否是单例
+     * @see Singleton
+     */
+    private static boolean isSingleton(Class<?> clazz) {
+        Class<?>[] interfaces;
+        return clazz.isAnnotationPresent(Singleton.class) ||
+                ((interfaces = clazz.getInterfaces()).length > 0 &&
+                        Arrays.stream(interfaces).anyMatch(annotatedType -> annotatedType.isAnnotationPresent(Singleton.class)));
     }
 }

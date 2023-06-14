@@ -66,7 +66,7 @@ public class ObjectTypeParser implements TypeParser<Object, AnnotatedType> {
      */
     private ParsedInfo parseAnnotation(Object value, AnnotatedType annotatedType, Parse parse) {
         @SuppressWarnings("unchecked")
-        var annotationHandler = (AnnotationHandler<Object, Annotation>) InstanceCreators.find(parse.handler()).create();
+        var annotationHandler = (AnnotationHandler<Object, Annotation, Object>) InstanceCreators.find(parse.handler()).create();
         var set = new HashSet<Annotation>();
         for (Location location : parse.location()) {
             switch (location) {
@@ -93,7 +93,8 @@ public class ObjectTypeParser implements TypeParser<Object, AnnotatedType> {
      * @param annotations       符合解析条件的所有注解
      * @param annotationHandler 注解处理器
      */
-    record ParsedInfo(HashSet<Annotation> annotations, AnnotationHandler<Object, Annotation> annotationHandler) {
+    record ParsedInfo(HashSet<Annotation> annotations,
+                      AnnotationHandler<Object, Annotation, Object> annotationHandler) {
     }
 
 }
