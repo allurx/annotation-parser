@@ -17,6 +17,7 @@ package red.zyc.parser.util;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -25,8 +26,10 @@ import java.lang.annotation.Target;
  * 满足以下条件之一，{@link InstanceCreator}运行期间只会创建一个这个类的实例。
  * <ul>
  *     <li>{@link Class}上<b>存在</b>该注解</li>
- *     <li>{@link Class#getInterfaces()}中的任意一个类上<b>存在</b>该注解</li>
+ *     <li>{@link Class#getInterfaces()}中任意一个接口或者该接口递归实现的接口上<b>直接存在</b>该注解</li>
+ *     <li>所有父类的{@link Class#getInterfaces()}中任意一个接口或者该接口递归实现的接口上<b>直接存在</b>该注解</li>
  * </ul>
+ * 注意：被{@link Inherited}标注的注解只会被{@code class}继承，{@code interface}之间无法继承。
  *
  * @author zyc
  * @see InstanceCreator
@@ -34,6 +37,8 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@Inherited
 @Documented
 public @interface Singleton {
+
 }

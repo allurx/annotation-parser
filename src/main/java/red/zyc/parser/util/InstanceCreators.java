@@ -39,6 +39,7 @@ public final class InstanceCreators {
     private static final List<?> EMPTY_LIST = new ArrayList<>();
     private static final Map<Class<?>, InstanceCreator<?>> INSTANCE_CREATORS = new ConcurrentHashMap<>();
     private static final Map<Class<?>, Object> SINGLETONS = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, Boolean> SINGLETON_MARK = new ConcurrentHashMap<>();
 
     private InstanceCreators() {
     }
@@ -152,9 +153,17 @@ public final class InstanceCreators {
      * @see Singleton
      */
     private static boolean isSingleton(Class<?> clazz) {
-        Class<?>[] interfaces;
-        return clazz.isAnnotationPresent(Singleton.class) ||
-                ((interfaces = clazz.getInterfaces()).length > 0 &&
-                        Arrays.stream(interfaces).anyMatch(annotatedType -> annotatedType.isAnnotationPresent(Singleton.class)));
+        return Optional.ofNullable(SINGLETON_MARK.get(clazz)).orElse(singleton(clazz));
     }
+
+    private static boolean singleton(Class<?> clazz) {
+        Class<?>[] interfaces;
+        boolean v = clazz != null && clazz != Object.class &&
+                ((clazz.isInterface() ? clazz.getDeclaredAnnotation(Singleton.class) != null : clazz.isAnnotationPresent(Singleton.class)) ||
+                        ((interfaces = clazz.getInterfaces()).length > 0 && Arrays.stream(interfaces).anyMatch(InstanceCreators::singleton)) ||
+                        singleton(clazz.getSuperclass()));
+        Optional.ofNullable(clazz).ifPresent(c -> SINGLETON_MARK.putIfAbsent(c, v));
+        return v;
+    }
+
 }
