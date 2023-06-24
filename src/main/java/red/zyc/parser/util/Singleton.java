@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  *     <li>{@link Class#getInterfaces()}中任意一个接口或者该接口递归实现的接口上<b>直接存在</b>该注解</li>
  *     <li>所有父类的{@link Class#getInterfaces()}中任意一个接口或者该接口递归实现的接口上<b>直接存在</b>该注解</li>
  * </ul>
- * 注意：被{@link Inherited}标注的注解只会被{@code class}继承，{@code interface}之间无法继承。
+ * 注意：{@link Inherited}标注的注解只会被{@code class}继承，{@code interface}之间无法继承。
  *
  * @author zyc
  * @see InstanceCreator

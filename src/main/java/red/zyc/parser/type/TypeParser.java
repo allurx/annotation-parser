@@ -55,7 +55,7 @@ import java.util.Map;
 public interface TypeParser<T, AT extends AnnotatedType> extends Sortable, Comparable<TypeParser<?, ? extends AnnotatedType>> {
 
     /**
-     * 解析对象，注意实现该方法的子类如果能够解析目标对象，那么最终应当返回一个新的{@link T}实例
+     * 解析对象，实现该方法的子类如果能够解析目标对象，应当<b>尽可能</b>返回一个新的{@link T}实例
      *
      * @param value         被解析的对象
      * @param annotatedType 被解析对象的{@link AnnotatedType}
