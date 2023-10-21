@@ -23,3 +23,6 @@ annotation-parser库是基于JDK1.8新增的`AnnotatedType`类型体系并通过
 * [Java Type](https://www.zyc.red/Java/Reflection/Type)
 * [Java AnnotatedType](https://www.zyc.red/Java/Reflection/AnnotatedType)
 * [Java AnnotatedElement](https://www.zyc.red/Java/Reflection/AnnotatedElement)
+
+# License
+[Apache License 2.0](https://github.com/allurx/annotation-parser/blob/master/LICENSE.txt)
