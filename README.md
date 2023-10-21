@@ -18,7 +18,7 @@ jdk21
 4. [解析对象Field上的注解](https://github.com/allurx/annotation-parser/blob/master/src/test/java/red/zyc/parser/CascadeTest.java)
 5. [更多例子](https://github.com/allurx/annotation-parser/tree/master/src/test/java/red/zyc/parser)
 # 原理
-annotation-parser库是基于JDK1.8新增的`AnnotatedType`类型体系并通过责任链这种设计模式来解析各种复杂数据结构中的注解的，要想完全理解其背后的实现原理需要对Java的`Type`体系和`AnnotatedType`体系有较为深刻的理解，可以参考以下几篇文章了解Java中的类型体系以及注解体系。
+annotation-parser库是基于JDK1.8新增的`AnnotatedType`类型体系并通过责任链这种设计模式来解析各种复杂数据结构中的注解的，要想完全理解其背后的实现原理需要对Java的`Type`体系和`AnnotatedType`体系有较为深刻的理解，可以参考以下几篇文章进行深入了解。
 
 * [Java Type](https://www.zyc.red/Java/Reflection/Type)
 * [Java AnnotatedType](https://www.zyc.red/Java/Reflection/AnnotatedType)
