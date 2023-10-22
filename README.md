@@ -70,7 +70,7 @@ void parse() {
 }
 ```
 # 原理
-annotation-parser库是基于JDK1.8新增的`AnnotatedType`类型体系并通过责任链这种设计模式来解析任意数据结构中的注解的，要想完全理解其背后的实现原理需要对Java的`Type`体系和`AnnotatedType`体系有较为深刻的理解，可以参考以下几篇文章进行深入了解。
+annotation-parser库是基于JDK1.8新增的`AnnotatedType`类型体系并通过责任链这种设计模式来解析任意数据结构中自定义注解的，要想完全理解其背后的实现原理需要对Java的`Type`体系和`AnnotatedType`体系有较为深刻的理解，可以参考以下几篇文章进行深入了解。
 
 * [Java Type](https://www.zyc.red/Java/Reflection/Type)
 * [Java AnnotatedType](https://www.zyc.red/Java/Reflection/AnnotatedType)
