@@ -13,12 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+package red.zyc.annotation.parser.test.annotation;
+
+import red.zyc.annotation.parser.handler.Parse;
+import red.zyc.annotation.parser.test.handler.EraseStringAnnotationHandler;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
- * @author allurx
+ * @author zyc
  */
-module red.zyc.annotation.parser {
-    exports red.zyc.annotation.parser;
-    exports red.zyc.annotation.parser.handler;
-    exports red.zyc.annotation.parser.type;
-    exports red.zyc.annotation.parser.util;
+@Target({ElementType.TYPE_USE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Parse(handler = EraseStringAnnotationHandler.class, annotation = EraseString.class)
+public @interface EraseString {
 }

@@ -13,12 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package red.zyc.annotation.parser.handler;
+
+import java.lang.reflect.AnnotatedElement;
+
 /**
+ * 注解出现在目标对象上的位置
+ *
  * @author allurx
+ * @see AnnotatedElement
  */
-module red.zyc.annotation.parser {
-    exports red.zyc.annotation.parser;
-    exports red.zyc.annotation.parser.handler;
-    exports red.zyc.annotation.parser.type;
-    exports red.zyc.annotation.parser.util;
+public enum Location {
+
+    /**
+     * 直接存在
+     */
+    DIRECTLY_PRESENT,
+
+    /**
+     * 间接存在
+     */
+    INDIRECTLY_PRESENT,
+
+    /**
+     * 存在
+     */
+    PRESENT,
+
+    /**
+     * 关联的
+     */
+    ASSOCIATED
+
 }

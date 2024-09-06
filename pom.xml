@@ -4,13 +4,13 @@
 
     <groupId>red.zyc</groupId>
     <artifactId>annotation-parser</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <name>annotation-parser</name>
     <url>https://github.com/allurx/annotation-parser</url>
     <description>Java Annotation Parser</description>
 
     <properties>
-        <junit-jupiter.version>5.9.3</junit-jupiter.version>
+        <junit-jupiter.version>5.11.0</junit-jupiter.version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
         <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>

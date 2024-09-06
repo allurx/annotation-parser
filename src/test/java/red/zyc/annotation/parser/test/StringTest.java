@@ -13,12 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package red.zyc.annotation.parser.test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import red.zyc.annotation.parser.AnnotationParser;
+import red.zyc.annotation.parser.test.annotation.EraseString;
+import red.zyc.annotation.parser.type.AnnotatedTypeToken;
+
 /**
- * @author allurx
+ * 解析{@link String}上的注解
+ *
+ * @author zyc
  */
-module red.zyc.annotation.parser {
-    exports red.zyc.annotation.parser;
-    exports red.zyc.annotation.parser.handler;
-    exports red.zyc.annotation.parser.type;
-    exports red.zyc.annotation.parser.util;
+public class StringTest {
+
+    @Test
+    void test() {
+
+        var s = "123456";
+        var parsed = AnnotationParser.parse(s, new AnnotatedTypeToken<@EraseString String>() {
+        });
+
+        Assertions.assertEquals("******", parsed);
+    }
+
 }

@@ -16,9 +16,13 @@
 /**
  * @author allurx
  */
-module red.zyc.annotation.parser {
-    exports red.zyc.annotation.parser;
-    exports red.zyc.annotation.parser.handler;
-    exports red.zyc.annotation.parser.type;
-    exports red.zyc.annotation.parser.util;
+module red.zyc.annotation.parser.test {
+    requires red.zyc.annotation.parser;
+    requires org.junit.jupiter;
+    exports red.zyc.annotation.parser.test;
+    exports red.zyc.annotation.parser.test.annotation;
+    exports red.zyc.annotation.parser.test.handler;
+    opens red.zyc.annotation.parser.test;
+    opens red.zyc.annotation.parser.test.annotation;
+    opens red.zyc.annotation.parser.test.handler;
 }

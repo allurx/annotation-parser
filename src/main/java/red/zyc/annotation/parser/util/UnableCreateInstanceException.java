@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package red.zyc.annotation.parser.util;
+
 /**
  * @author allurx
  */
-module red.zyc.annotation.parser {
-    exports red.zyc.annotation.parser;
-    exports red.zyc.annotation.parser.handler;
-    exports red.zyc.annotation.parser.type;
-    exports red.zyc.annotation.parser.util;
+public class UnableCreateInstanceException extends RuntimeException {
+
+    public UnableCreateInstanceException(String message) {
+        super(message);
+    }
 }
