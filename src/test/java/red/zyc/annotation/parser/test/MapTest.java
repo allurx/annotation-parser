@@ -31,7 +31,7 @@ import java.util.stream.IntStream;
  *
  * @author zyc
  */
-public class MapTest {
+class MapTest {
 
     @Test
     void test() {

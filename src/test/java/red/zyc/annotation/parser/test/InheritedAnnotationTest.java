@@ -35,7 +35,7 @@ import java.lang.annotation.Target;
  *
  * @author zyc
  */
-public class InheritedAnnotationTest {
+class InheritedAnnotationTest {
 
     @Test
     void test() {

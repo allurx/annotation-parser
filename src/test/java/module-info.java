@@ -19,6 +19,7 @@
 module red.zyc.annotation.parser.test {
     requires red.zyc.annotation.parser;
     requires org.junit.jupiter;
+    requires org.junit.jupiter.api;
     exports red.zyc.annotation.parser.test;
     exports red.zyc.annotation.parser.test.annotation;
     exports red.zyc.annotation.parser.test.handler;

@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @author zyc
  */
-public class CascadeTest {
+class CascadeTest {
 
     @Test
     void test() {

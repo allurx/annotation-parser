@@ -35,7 +35,7 @@ import java.lang.annotation.Target;
  *
  * @author zyc
  */
-public class RepeatableAnnotationTest {
+class RepeatableAnnotationTest {
 
     @Test
     void test() {

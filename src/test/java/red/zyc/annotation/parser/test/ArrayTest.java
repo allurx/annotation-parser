@@ -29,7 +29,7 @@ import java.util.Arrays;
  *
  * @author zyc
  */
-public class ArrayTest {
+class ArrayTest {
 
     @Test
     void test() {

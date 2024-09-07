@@ -26,7 +26,7 @@ import red.zyc.annotation.parser.type.AnnotatedTypeToken;
  *
  * @author zyc
  */
-public class StringTest {
+class StringTest {
 
     @Test
     void test() {
