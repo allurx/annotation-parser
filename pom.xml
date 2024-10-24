@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>red.zyc</groupId>
+    <groupId>io.allurx</groupId>
     <artifactId>annotation-parser</artifactId>
     <version>1.0.1</version>
     <name>annotation-parser</name>
@@ -11,6 +11,7 @@
 
     <properties>
         <junit-jupiter.version>5.11.0</junit-jupiter.version>
+        <kit-base.version>2.0.0</kit-base.version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
         <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
@@ -39,13 +40,18 @@
 
     <developers>
         <developer>
-            <name>zyc</name>
+            <name>allurx</name>
             <email>allurx.zyc@gmail.com</email>
-            <url>https://www.zyc.red</url>
+            <url>https://www.allurx.io</url>
         </developer>
     </developers>
 
     <dependencies>
+        <dependency>
+            <groupId>io.allurx.kit</groupId>
+            <artifactId>kit-base</artifactId>
+            <version>${kit-base.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>

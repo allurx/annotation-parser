@@ -6,7 +6,7 @@ JDK21
 ## maven依赖
 ```xml
 <dependency>
-    <groupId>red.zyc</groupId>
+    <groupId>io.allurx</groupId>~~~~
     <artifactId>annotation-parser</artifactId>
     <version>1.0.0</version>
 </dependency>

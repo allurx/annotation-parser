@@ -1,0 +1,50 @@
+/*
+ * Copyright 2024 allurx
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.allurx.annotation.parser.test;
+
+import io.allurx.annotation.parser.AnnotationParser;
+import io.allurx.annotation.parser.test.annotation.EraseString;
+import io.allurx.annotation.parser.type.Cascade;
+import io.allurx.kit.base.reflection.AnnotatedTypeToken;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import java.lang.reflect.Field;
+
+/**
+ * 解析对象{@link Field}上的注解
+ *
+ * @author zyc
+ */
+class CascadeTest {
+
+    @Test
+    void test() {
+
+        var boy = new Boy("Boy", new Girl("Girl"));
+        var parsed = AnnotationParser.parse(boy, new AnnotatedTypeToken<@Cascade Boy>() {
+        });
+
+        Assertions.assertEquals("******", parsed.name);
+        Assertions.assertEquals("******", parsed.girl.name);
+    }
+
+    record Boy(@EraseString String name, @Cascade Girl girl) {
+    }
+
+    record Girl(@EraseString String name) {
+    }
+}

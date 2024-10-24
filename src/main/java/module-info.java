@@ -16,9 +16,10 @@
 /**
  * @author allurx
  */
-module red.zyc.annotation.parser {
-    exports red.zyc.annotation.parser;
-    exports red.zyc.annotation.parser.handler;
-    exports red.zyc.annotation.parser.type;
-    exports red.zyc.annotation.parser.util;
+module io.allurx.annotation.parser {
+    requires io.allurx.kit.base;
+    exports io.allurx.annotation.parser;
+    exports io.allurx.annotation.parser.handler;
+    exports io.allurx.annotation.parser.type;
+    exports io.allurx.annotation.parser.util;
 }

@@ -13,17 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.allurx.annotation.parser.handler;
+
+import java.lang.reflect.AnnotatedElement;
+
 /**
+ * 注解出现在目标对象上的位置
+ *
  * @author allurx
+ * @see AnnotatedElement
  */
-module io.allurx.annotation.parser.test {
-    requires org.junit.jupiter.api;
-    requires io.allurx.kit.base;
-    requires io.allurx.annotation.parser;
-    exports io.allurx.annotation.parser.test;
-    exports io.allurx.annotation.parser.test.annotation;
-    exports io.allurx.annotation.parser.test.handler;
-    opens io.allurx.annotation.parser.test;
-    opens io.allurx.annotation.parser.test.annotation;
-    opens io.allurx.annotation.parser.test.handler;
+public enum Location {
+
+    /**
+     * 直接存在
+     */
+    DIRECTLY_PRESENT,
+
+    /**
+     * 间接存在
+     */
+    INDIRECTLY_PRESENT,
+
+    /**
+     * 存在
+     */
+    PRESENT,
+
+    /**
+     * 关联的
+     */
+    ASSOCIATED
+
 }

@@ -13,17 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.allurx.annotation.parser.handler;
+
+import io.allurx.annotation.parser.util.Singleton;
+
+import java.lang.annotation.Annotation;
+
 /**
+ * 注解处理程序
+ *
+ * @param <T> 待处理的对象类型
+ * @param <A> 标注在对象上的注解类型
+ * @param <R> 处理的结果类型
  * @author allurx
+ * @see Parse
  */
-module io.allurx.annotation.parser.test {
-    requires org.junit.jupiter.api;
-    requires io.allurx.kit.base;
-    requires io.allurx.annotation.parser;
-    exports io.allurx.annotation.parser.test;
-    exports io.allurx.annotation.parser.test.annotation;
-    exports io.allurx.annotation.parser.test.handler;
-    opens io.allurx.annotation.parser.test;
-    opens io.allurx.annotation.parser.test.annotation;
-    opens io.allurx.annotation.parser.test.handler;
+@Singleton
+public interface AnnotationHandler<T, A extends Annotation, R> {
+
+    /**
+     * 处理目标对象与该对象上的注解
+     *
+     * @param target     目标对象
+     * @param annotation 对象上的注解
+     * @return 处理后的结果
+     */
+    R handle(T target, A annotation);
 }

@@ -13,17 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.allurx.annotation.parser.test;
+
+import io.allurx.annotation.parser.AnnotationParser;
+import io.allurx.kit.base.reflection.AnnotatedTypeToken;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import io.allurx.annotation.parser.test.annotation.EraseString;
+
 /**
- * @author allurx
+ * 解析{@link String}上的注解
+ *
+ * @author zyc
  */
-module io.allurx.annotation.parser.test {
-    requires org.junit.jupiter.api;
-    requires io.allurx.kit.base;
-    requires io.allurx.annotation.parser;
-    exports io.allurx.annotation.parser.test;
-    exports io.allurx.annotation.parser.test.annotation;
-    exports io.allurx.annotation.parser.test.handler;
-    opens io.allurx.annotation.parser.test;
-    opens io.allurx.annotation.parser.test.annotation;
-    opens io.allurx.annotation.parser.test.handler;
+class StringTest {
+
+    @Test
+    void test() {
+
+        var s = "123456";
+        var parsed = AnnotationParser.parse(s, new AnnotatedTypeToken<@EraseString String>() {
+        });
+
+        Assertions.assertEquals("******", parsed);
+    }
+
 }

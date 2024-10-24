@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.allurx.annotation.parser.test.handler;
+
+import io.allurx.annotation.parser.handler.AnnotationHandler;
+import io.allurx.annotation.parser.test.annotation.EraseString;
+
 /**
- * @author allurx
+ * @author zyc
  */
-module io.allurx.annotation.parser.test {
-    requires org.junit.jupiter.api;
-    requires io.allurx.kit.base;
-    requires io.allurx.annotation.parser;
-    exports io.allurx.annotation.parser.test;
-    exports io.allurx.annotation.parser.test.annotation;
-    exports io.allurx.annotation.parser.test.handler;
-    opens io.allurx.annotation.parser.test;
-    opens io.allurx.annotation.parser.test.annotation;
-    opens io.allurx.annotation.parser.test.handler;
+public class EraseStringAnnotationHandler implements AnnotationHandler<String, EraseString, String> {
+
+    @Override
+    public String handle(String target, EraseString annotation) {
+        return "******";
+    }
 }
