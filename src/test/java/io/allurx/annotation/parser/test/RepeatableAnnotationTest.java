@@ -16,12 +16,12 @@
 package io.allurx.annotation.parser.test;
 
 import io.allurx.annotation.parser.AnnotationParser;
-import io.allurx.kit.base.reflection.AnnotatedTypeToken;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import io.allurx.annotation.parser.handler.AnnotationHandler;
 import io.allurx.annotation.parser.handler.Location;
 import io.allurx.annotation.parser.handler.Parse;
+import io.allurx.kit.base.reflection.AnnotatedTypeToken;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -31,40 +31,58 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 解析{@link Repeatable}注解
+ * This class tests the parsing of the {@link Repeatable} annotation
+ * by summing values from multiple instances of the {@link Accumulator} annotation.
  *
- * @author zyc
+ * @author allurx
  */
 class RepeatableAnnotationTest {
 
+    /**
+     * Test method to validate the parsing and summation of values
+     * from repeatable {@link Accumulator} annotations.
+     * It parses an integer with multiple {@link Accumulator} annotations
+     * and asserts that the resulting sum equals 6.
+     */
     @Test
     void test() {
 
         int i = 0;
+        // Parse the integer with multiple @Accumulator annotations
         int parsed = AnnotationParser.parse(i, new AnnotatedTypeToken<@Accumulator(1) @Accumulator(2) @Accumulator(3) Integer>() {
         });
 
+        // Verify that the sum of accumulator values is correct
         Assertions.assertEquals(6, parsed);
     }
 
+    /**
+     * Annotation to accumulate integer values.
+     * Can be used multiple times due to {@link Repeatable}.
+     */
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.RUNTIME)
     @Repeatable(RepeatableAnnotation.class)
     @Documented
     @interface Accumulator {
-
         int value();
     }
 
+    /**
+     * Wrapper annotation for repeatable {@link Accumulator} annotations.
+     */
     @Parse(handler = AccumulatorHandler.class, annotation = Accumulator.class, location = Location.INDIRECTLY_PRESENT)
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @interface RepeatableAnnotation {
-
         Accumulator[] value();
     }
 
+    /**
+     * Handler for processing {@link Accumulator} annotations.
+     * It sums the target integer with the value of the annotation.
+     */
     static class AccumulatorHandler implements AnnotationHandler<Integer, Accumulator, Integer> {
 
         @Override
@@ -72,5 +90,5 @@ class RepeatableAnnotationTest {
             return target + annotation.value();
         }
     }
-
 }
+

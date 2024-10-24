@@ -19,10 +19,24 @@ import io.allurx.annotation.parser.handler.AnnotationHandler;
 import io.allurx.annotation.parser.test.annotation.EraseString;
 
 /**
- * @author zyc
+ * Handler for processing the {@link EraseString} annotation.
+ * This class implements the {@link AnnotationHandler} interface
+ * to define the logic for erasing or masking a string value.
+ *
+ * <p>When invoked, the {@link #handle(String, EraseString)} method
+ * replaces the original string with asterisks ("******").</p>
+ *
+ * @author allurx
  */
 public class EraseStringAnnotationHandler implements AnnotationHandler<String, EraseString, String> {
 
+    /**
+     * Handles the annotation by returning a masked version of the target string.
+     *
+     * @param target     the original string to be processed
+     * @param annotation the {@link EraseString} annotation instance
+     * @return a string composed of asterisks ("******")
+     */
     @Override
     public String handle(String target, EraseString annotation) {
         return "******";

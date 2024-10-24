@@ -16,31 +16,34 @@
 package io.allurx.annotation.parser.util;
 
 /**
- * 用户可以通过该接口定义特定类型的实例创建器，例如有以下对象定义：
+ * This interface allows users to define specific instance creators for particular types.
+ * For example, consider the following class definition:
  * <pre>
  *      class Person {
- *          Person(your constructor parameters){
+ *          Person(your constructor parameters) {
  *              ...
  *          }
  *      }
  * </pre>
- * 在类Person定义中只存在一个有参构造器，不存在无参构造器，因此在程序运行期间只能确定
- * 一个有参构造器，但不知道传入什么参数来调用该构造器，所以建议在定义自己的类时为其添加一个无参构造器
- * 以便程序能够基于反射来初始化该对象，或者你也可以实现实例创建器接口来定义类Person的默认创建器：
+ * In the `Person` class definition, there is only one parameterized constructor and no no-argument constructor.
+ * Therefore, at runtime, the program can determine the presence of a parameterized constructor but does not know
+ * what parameters to pass to invoke it. It is recommended to add a no-argument constructor to your class
+ * to allow the program to initialize the object via reflection. Alternatively, you can implement this interface
+ * to define a default creator for the `Person` class:
  * <pre>
  *     class PersonInstanceCreator implements InstanceCreator&lt;Person&gt; {
  *
  *          &#64;Override
- *          public Person create(){
+ *          public Person create() {
  *              return new Person(your constructor parameters);
  *          }
  *
  *     }
  * </pre>
- * 然后调用{@link InstanceCreators#add}方法添加该实例创建器，最终程序在运行期间就会基于这个
- * 注册的实例创建器来创建相应的对象实例。
+ * After that, you can call {@link InstanceCreators#add} to register this instance creator,
+ * and the program will use the registered creator to instantiate the corresponding object at runtime.
  *
- * @param <T> 实例类型
+ * @param <T> the type of the instance
  * @author allurx
  * @see Singleton
  */
@@ -48,9 +51,9 @@ package io.allurx.annotation.parser.util;
 public interface InstanceCreator<T> {
 
     /**
-     * 创建指定类型的实例
+     * Creates an instance of the specified type.
      *
-     * @return 类型 {@link T}的实例
+     * @return an instance of type {@link T}
      */
     T create();
 }

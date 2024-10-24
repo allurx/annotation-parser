@@ -15,7 +15,8 @@
  */
 package io.allurx.annotation.parser.util;
 
-import java.lang.reflect.Constructor;
+import io.allurx.kit.base.reflection.TypeConverter;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,7 +27,25 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 实例创建器帮助类，用户可以通过这个类注册或者删除指定类型的实例创建器。
+ * A helper class for managing instance creators. Users can register or remove
+ * instance creators for specific types through this class.
+ *
+ * <p>This class allows you to define how instances of specific types should be created.
+ * For example, consider the following class definition:
+ * <pre>
+ *      class Person {
+ *          Person(your constructor parameters) {
+ *              ...
+ *          }
+ *      }
+ * </pre>
+ * In the `Person` class, there is only one parameterized constructor without a no-argument constructor.
+ * This class provides mechanisms to register instance creators that can handle such cases
+ * during object initialization.</p>
+ *
+ * <p><strong>Note:</strong> Avoid registering instance creators for primitive types,
+ * interface types, abstract types, or array types, as these are generally not meaningful.
+ * Instead, register creators for concrete types that may require additional operations during initialization.</p>
  *
  * @author allurx
  * @see InstanceCreator
@@ -44,80 +63,80 @@ public final class InstanceCreators {
     }
 
     /**
-     * 获取指定{@link Class}的实例创建器
+     * Retrieves the instance creator for the specified {@link Class}.
      *
-     * @param clazz 指定的{@link Class}
-     * @param <T>   指定{@link Class}的类型
-     * @return {@link Class}的实例创建器
+     * @param clazz the specified {@link Class}
+     * @param <T>   the type of the specified {@link Class}
+     * @return the instance creator for the specified {@link Class}
      */
-    @SuppressWarnings("unchecked")
     public static <T> InstanceCreator<T> find(Class<T> clazz) {
-        return (InstanceCreator<T>) INSTANCE_CREATORS.computeIfAbsent(clazz, c -> {
+        return TypeConverter.uncheckedCast(INSTANCE_CREATORS.computeIfAbsent(clazz, c -> {
             if (isSingleton(c)) {
                 return () -> SINGLETONS.computeIfAbsent(c, cc -> findInstanceCreator(cc).create());
             } else {
                 return findInstanceCreator(c);
             }
-        });
+        }));
     }
 
     /**
-     * 注册指定{@link Class}的实例创建器。
-     * <p><strong>注意：不要去注册基本类型、接口类型、抽象类型、数组类型的实例创建器，
-     * 这些类型的实例创建器是没有意义的，而应该注册那些在初始化过程中可能需要进行一些额外操作的具体类型。
-     * 因为程序运行期间不一定能够准确的实例化对象。
-     * </strong></p>
+     * Registers an instance creator for the specified {@link Class}.
      *
-     * @param clazz           指定的{@link Class}
-     * @param instanceCreator 指定{@link Class}的实例创建器
-     * @param <T>             实例创建器创建的对象类型
+     * <p><strong>Note:</strong> Do not register instance creators for primitive types,
+     * interface types, abstract types, or array types, as these types do not have meaningful instance creators.
+     * Instead, register creators for specific types that may require additional operations during initialization.</p>
+     *
+     * @param clazz           the specified {@link Class}
+     * @param instanceCreator the instance creator for the specified {@link Class}
+     * @param <T>             the type of the object created by the instance creator
      */
     public static <T> void add(Class<T> clazz, InstanceCreator<T> instanceCreator) {
         INSTANCE_CREATORS.put(clazz, instanceCreator);
     }
 
     /**
-     * 移除指定{@link Class}的实例创建器
+     * Removes the instance creator for the specified {@link Class}.
      *
-     * @param clazz 指定的{@link Class}
-     * @param <T>   指定的{@link Class}的实例类型
+     * @param clazz the specified {@link Class}
+     * @param <T>   the type of the specified {@link Class}
      */
     public static <T> void remove(Class<T> clazz) {
         INSTANCE_CREATORS.remove(clazz);
     }
 
     /**
-     * @return 所有实例创建器
+     * @return a map of all registered instance creators
      */
     public static Map<Class<?>, InstanceCreator<?>> instanceCreators() {
         return INSTANCE_CREATORS;
     }
 
     /**
-     * 获取指定{@link Class}的实例创建器，尝试获取的顺序如下：
+     * Retrieves the instance creator for the specified {@link Class}, attempting to find it in the following order:
      * <ol>
-     *     <li>如果该类型存在无参构造器，则通过该构造器来生成实例创建器。</li>
-     *     <li>如果该类型是{@link Collection}或者{@link Map}类型则尝试获取其带有一个{@link Collection}或者{@link Map}
-     *     类型参数的构造器来生成实例创建器，具体原因请参照{@link Collection}或者{@link Map}的定义规范。
-     *     </li>
+     *     <li>If the type has a no-argument constructor, create an instance creator using that constructor.</li>
+     *     <li>If the type is a {@link Collection} or {@link Map}, attempt to find a constructor that takes a
+     *     {@link Collection} or {@link Map} as a parameter, respectively, in accordance with the definitions of
+     *     {@link Collection} and {@link Map}.</li>
      * </ol>
      *
-     * @param clazz 指定{@link Class}
-     * @param <T>   指定{@link Class}的类型
-     * @return 指定 {@link Class}的实例创建器
+     * @param clazz the specified {@link Class}
+     * @param <T>   the type of the specified {@link Class}
+     * @return the instance creator for the specified {@link Class}
      */
     private static <T> InstanceCreator<T> findInstanceCreator(Class<T> clazz) {
         return Optional.ofNullable(createByNoArgsConstructor(clazz))
                 .or(() -> Optional.ofNullable(createByCollectionOrMapConstructor(clazz)))
-                .orElseThrow(() -> new UnableCreateInstanceException(String.format("无法创建%s的实例，请为该class添加一个InstanceCreator", clazz)));
+                .orElseThrow(() -> new UnableCreateInstanceException(String.format(
+                        "Unable to create an instance of %s. Please provide an InstanceCreator for this class.", clazz)));
     }
 
     /**
-     * 通过{@link Class}的{@link Constructor 无参构造器}创建实例
+     * Creates an instance creator using the no-argument constructor of the specified {@link Class}.
      *
-     * @param clazz 对象的{@link Class}
-     * @param <T>   对象的类型
-     * @return 该对象的实例创建器
+     * @param clazz the specified {@link Class}
+     * @param <T>   the type of the object
+     * @return the instance creator for the object
      */
     private static <T> InstanceCreator<T> createByNoArgsConstructor(Class<T> clazz) {
         return Optional.ofNullable(Reflections.getDeclaredConstructor(clazz))
@@ -125,11 +144,11 @@ public final class InstanceCreators {
     }
 
     /**
-     * 通过遵循{@link Collection}和{@link Map}定义规范的{@link Constructor 构造器}创建实例
+     * Creates an instance creator using a constructor that follows the definitions of {@link Collection} and {@link Map}.
      *
-     * @param clazz 对象的{@link Class}
-     * @param <T>   对象的类型
-     * @return 该对象的实例创建器
+     * @param clazz the specified {@link Class}
+     * @param <T>   the type of the object
+     * @return the instance creator for the object
      */
     private static <T> InstanceCreator<T> createByCollectionOrMapConstructor(Class<T> clazz) {
         if (Collection.class.isAssignableFrom(clazz)) {
@@ -145,10 +164,10 @@ public final class InstanceCreators {
     }
 
     /**
-     * 判断{@link Class}是否是单例
+     * Determines if the specified {@link Class} is a singleton.
      *
-     * @param clazz {@link Class}
-     * @return 是否是单例
+     * @param clazz the specified {@link Class}
+     * @return true if it is a singleton, false otherwise
      * @see Singleton
      */
     private static boolean isSingleton(Class<?> clazz) {
@@ -164,5 +183,4 @@ public final class InstanceCreators {
         Optional.ofNullable(clazz).ifPresent(c -> SINGLETON_MARK.putIfAbsent(c, v));
         return v;
     }
-
 }

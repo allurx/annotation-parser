@@ -17,32 +17,33 @@
 package io.allurx.annotation.parser.type;
 
 /**
- * 能够排序的对象
+ * An interface representing sortable objects.
  *
  * @author allurx
  */
 public interface Sortable {
 
     /**
-     * 最高优先级（最先执行）
+     * The highest priority (executed first).
      *
      * @see Integer#MIN_VALUE
      */
     int HIGHEST_PRIORITY = Integer.MIN_VALUE;
 
     /**
-     * 最低优先级（最晚执行）
+     * The lowest priority (executed last).
      *
      * @see Integer#MAX_VALUE
      */
     int LOWEST_PRIORITY = Integer.MAX_VALUE;
 
     /**
-     * 对象的顺序值，较高的顺序值将被解析为较低的优先级。相同的顺序值的对象只会取第一个对象。
-     * 例如顺序值较高的{@link TypeParser}将会比顺序值较低的{@link TypeParser}晚执行。而两个相同
-     * 顺序值的{@link TypeParser}只会保留第一个解析器。
+     * The order value of the object; a higher order value indicates a lower priority.
+     * Objects with the same order value will only keep the first one encountered.
+     * For example, a {@link TypeParser} with a higher order value will be executed after one with a lower order value.
+     * If two {@link TypeParser} instances have the same order value, only the first parser will be retained.
      *
-     * @return 顺序值
+     * @return the order value
      */
     int order();
 }

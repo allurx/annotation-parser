@@ -23,7 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 探测并处理{@link #annotation()}
+ * Detects and processes the {@link #annotation()}.
  *
  * @author allurx
  * @see AnnotationHandler
@@ -35,18 +35,19 @@ import java.lang.annotation.Target;
 public @interface Parse {
 
     /**
-     * @return {@link #annotation()}的处理器
+     * @return the handler for the {@link #annotation()}.
      */
     Class<? extends AnnotationHandler<?, ? extends Annotation, ?>> handler();
 
     /**
-     * @return 需要被解析的注解类型
+     * @return the type of annotation to be parsed.
      */
     Class<? extends Annotation> annotation();
 
     /**
-     * @return {@link #annotation()}以何种形式存在于对象上
+     * @return how the {@link #annotation()} is present on the target object.
      */
     Location[] location() default Location.DIRECTLY_PRESENT;
 
 }
+

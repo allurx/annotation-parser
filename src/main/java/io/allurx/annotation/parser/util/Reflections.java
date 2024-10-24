@@ -26,7 +26,16 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static io.allurx.kit.base.reflection.TypeConverter.uncheckedCast;
+
 /**
+ * Utility class for reflection operations.
+ * This class provides static methods to perform various reflection-related tasks
+ * such as retrieving fields, accessing and modifying field values, invoking methods,
+ * and working with constructors.
+ * <p>
+ * The class is final and has a private constructor to prevent instantiation.
+ *
  * @author allurx
  */
 public final class Reflections {
@@ -35,11 +44,12 @@ public final class Reflections {
     }
 
     /**
-     * 获取目标对象上的{@link Field}
+     * Retrieves the {@link Field} objects declared in the specified class.
      *
-     * @param targetClass 目标对象的{@link Class}
-     * @param inherited   是否获取从父类继承的{@link Field}
-     * @return 目标对象上的 {@link Field}
+     * @param targetClass the {@link Class} of the target object
+     * @param inherited   whether to include inherited {@link Field} objects from superclasses
+     * @return a list of {@link Field} objects declared in the specified class,
+     * including inherited fields if specified
      */
     public static List<Field> listFields(Class<?> targetClass, boolean inherited) {
         return Optional.ofNullable(targetClass)
@@ -54,11 +64,12 @@ public final class Reflections {
     }
 
     /**
-     * 获取目标对象中某个{@link Field}的值
+     * Retrieves the value of a specific {@link Field} in the target object.
      *
-     * @param target 目标对象
-     * @param field  目标对象的{@link Field}
-     * @return {@link Field}的值
+     * @param target the target object from which to retrieve the field value
+     * @param field  the {@link Field} object representing the field to access
+     * @return the value of the specified {@link Field}
+     * @throws ReflectionException if accessing the field fails
      */
     public static Object getFieldValue(Object target, Field field) {
         try {
@@ -68,16 +79,17 @@ public final class Reflections {
             field.setAccessible(true);
             return field.get(target);
         } catch (Exception e) {
-            throw new ReflectionException(String.format("获取%s的域%s失败。", target.getClass(), field.getName()), e);
+            throw new ReflectionException(String.format("Failed to get value of field %s from %s.", field.getName(), target.getClass()), e);
         }
     }
 
     /**
-     * 设置目标对象某个域的值
+     * Sets the value of a specific field in the target object.
      *
-     * @param target   目标对象
-     * @param field    目标对象的{@link Field}
-     * @param newValue 将要设置的新值
+     * @param target   the target object to modify
+     * @param field    the {@link Field} object representing the field to modify
+     * @param newValue the new value to set for the field
+     * @throws ReflectionException if setting the field value fails
      */
     public static void setFieldValue(Object target, Field field, Object newValue) {
         try {
@@ -88,17 +100,18 @@ public final class Reflections {
             field.setAccessible(true);
             field.set(target, newValue);
         } catch (Exception e) {
-            throw new ReflectionException(String.format("%s的域%s赋值失败。", target.getClass(), field.getName()), e);
+            throw new ReflectionException(String.format("Failed to set value of field %s in %s.", field.getName(), target.getClass()), e);
         }
     }
 
     /**
-     * 执行方法
+     * Invokes a method on the target object.
      *
-     * @param target 目标对象
-     * @param method 目标对象的{@link Method}
-     * @param args   方法参数
-     * @return 方法执行结果
+     * @param target the target object on which to invoke the method
+     * @param method the {@link Method} object representing the method to invoke
+     * @param args   the arguments to pass to the method
+     * @return the result of the method execution
+     * @throws ReflectionException if method invocation fails
      */
     public static Object invokeMethod(Object target, Method method, Object... args) {
         try {
@@ -108,17 +121,17 @@ public final class Reflections {
             method.setAccessible(true);
             return method.invoke(target, args);
         } catch (Exception e) {
-            throw new ReflectionException(String.format("执行方法%s失败。", method), e);
+            throw new ReflectionException(String.format("Failed to invoke method %s.", method), e);
         }
     }
 
     /**
-     * 从指定的{@code class}中获取带有指定参数的构造器
+     * Retrieves a declared constructor of the specified class that matches the given parameter types.
      *
-     * @param clazz          指定的{@code class}
-     * @param parameterTypes 构造器的参数
-     * @param <T>            构造器代表的对象类型
-     * @return 带有指定参数的构造器
+     * @param clazz          the {@code Class} object to search for a constructor
+     * @param parameterTypes the parameter types of the constructor to find
+     * @param <T>            the type of the object that the constructor represents
+     * @return the declared constructor that matches the specified parameter types, or null if not found
      */
     public static <T> Constructor<T> getDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes) {
         try {
@@ -129,12 +142,13 @@ public final class Reflections {
     }
 
     /**
-     * 实例化构造器代表的对象
+     * Instantiates an object represented by the specified constructor with the given arguments.
      *
-     * @param constructor 构造器
-     * @param args        构造器参数
-     * @param <T>         构造器代表对象的类型
-     * @return 构造器代表的对象
+     * @param constructor the constructor to use for instantiation
+     * @param args        the arguments to pass to the constructor
+     * @param <T>         the type of the object represented by the constructor
+     * @return an instance of the object created by the constructor
+     * @throws ReflectionException if instantiation fails
      */
     public static <T> T newInstance(Constructor<T> constructor, Object... args) {
         try {
@@ -143,34 +157,30 @@ public final class Reflections {
             }
             return constructor.newInstance(args);
         } catch (Exception e) {
-            throw new ReflectionException(String.format("构造器%s通过参数%s实例化失败", constructor, Arrays.toString(args)), e);
+            throw new ReflectionException(String.format("Failed to instantiate object using constructor %s with parameters %s", constructor, Arrays.toString(args)), e);
         }
     }
 
     /**
-     * 创建指定组件类型、长度的数组
+     * Creates a new array of the specified component type and length.
      *
-     * @param componentType 组件的{@link Class}
-     * @param length        数组长度
-     * @param <T>           组件的类型
-     * @return 指定组件类型、长度的数组
+     * @param componentType the {@link Class} of the component type
+     * @param length        the length of the array to create
+     * @param <T>           the type of the components in the array
+     * @return a new array of the specified component type and length
      */
-    @SuppressWarnings("unchecked")
     public static <T> T[] newArray(Class<T> componentType, int length) {
-        return (T[]) Array.newInstance(componentType, length);
+        return uncheckedCast(Array.newInstance(componentType, length));
     }
 
     /**
-     * {@link Object#getClass()}返回是通配符类型的{@link Class}，
-     * 可以通过这个方法获取指定类型对象的{@link Class}。
+     * Retrieves the {@link Class} object of the specified value.
      *
-     * @param value 对象值
-     * @param <T>   对象类型
-     * @return 指定类型对象的 {@link Class}
+     * @param value the object value
+     * @param <T>   the type of the object
+     * @return the {@link Class} object representing the type of the specified value
      */
-    @SuppressWarnings("unchecked")
     public static <T> Class<T> getClass(T value) {
-        return (Class<T>) value.getClass();
+        return uncheckedCast(value.getClass());
     }
-
 }

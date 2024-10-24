@@ -23,13 +23,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 满足以下条件之一，{@link InstanceCreator}运行期间只会创建一个这个类的实例。
+ * Indicates that only one instance of the annotated class can be created
+ * during the runtime of an {@link InstanceCreator}. The conditions for this
+ * are as follows:
  * <ul>
- *     <li>{@link Class}上<b>存在</b>该注解</li>
- *     <li>{@link Class#getInterfaces()}中任意一个接口或者该接口递归实现的接口上<b>直接存在</b>该注解</li>
- *     <li>所有父类的{@link Class#getInterfaces()}中任意一个接口或者该接口递归实现的接口上<b>直接存在</b>该注解</li>
+ *     <li>The annotation is <b>present</b> on the {@link Class} itself.</li>
+ *     <li>The annotation is <b>directly present</b> on any interface listed in
+ *         {@link Class#getInterfaces()} or any interface recursively implemented.</li>
+ *     <li>The annotation is <b>directly present</b> on any interface in the
+ *         {@link Class#getInterfaces()} of all parent classes, or any recursively implemented interfaces.</li>
  * </ul>
- * 注意：{@link Inherited}标注的注解只会被{@code class}继承，{@code interface}之间无法继承。
+ * <p>Note: Annotations marked with {@link Inherited} are only inherited by
+ * classes; interfaces do not inherit annotations from other interfaces.</p>
  *
  * @author allurx
  * @see InstanceCreator
@@ -40,5 +45,4 @@ import java.lang.annotation.Target;
 @Inherited
 @Documented
 public @interface Singleton {
-
 }

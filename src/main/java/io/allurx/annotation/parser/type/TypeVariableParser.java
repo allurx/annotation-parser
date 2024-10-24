@@ -23,7 +23,11 @@ import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 
 /**
- * {@link TypeVariable}类型解析器
+ * {@link TypeVariable} type parser.
+ * <p>
+ * This class is responsible for parsing annotated type variables.
+ * It processes the bounds of the type variable, allowing for custom parsing
+ * based on the annotations defined on those bounds.
  *
  * @author allurx
  */
@@ -31,7 +35,8 @@ public class TypeVariableParser implements TypeParser<Object, AnnotatedTypeVaria
 
     @Override
     public Object parse(Object value, AnnotatedTypeVariable annotatedTypeVariable) {
-        return Arrays.stream(annotatedTypeVariable.getAnnotatedBounds()).reduce(value, AnnotationParser::parse, (v1, v2) -> null);
+        return Arrays.stream(annotatedTypeVariable.getAnnotatedBounds())
+                .reduce(value, AnnotationParser::parse, (v1, v2) -> null);
     }
 
     @Override

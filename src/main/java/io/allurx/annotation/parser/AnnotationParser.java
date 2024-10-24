@@ -35,14 +35,14 @@ import java.util.TreeSet;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * 注解解析器入口，提供了很多有用的帮助方法
+ * Entry point for annotation parsing, providing various useful helper methods.
  * <ol>
- *     <li>{@link AnnotationParser#parse(Object, AnnotatedTypeToken) 根据AnnotatedTypeToken解析对象}</li>
- *     <li>{@link AnnotationParser#parse(Object, AnnotatedType) 根据AnnotatedType解析对象}</li>
- *     <li>{@link AnnotationParser#addTypeParser 添加类型解析器}</li>
- *     <li>{@link AnnotationParser#removeTypeParser 移除类型解析器}</li>
- *     <li>{@link AnnotationParser#randomOrder 生成一个不会与已注册的类型解析器解析顺序冲突的随机顺序值}</li>
- *     <li>{@link AnnotationParser#typeParsers 获取当前所有已注册的类型解析器}</li>
+ *     <li>{@link AnnotationParser#parse(Object, AnnotatedTypeToken) Parses an object based on the AnnotatedTypeToken}</li>
+ *     <li>{@link AnnotationParser#parse(Object, AnnotatedType) Parses an object based on the AnnotatedType}</li>
+ *     <li>{@link AnnotationParser#addTypeParser Adds a custom type parser}</li>
+ *     <li>{@link AnnotationParser#removeTypeParser Removes a registered type parser}</li>
+ *     <li>{@link AnnotationParser#randomOrder Generates a random order value that does not conflict with registered type parsers' order}</li>
+ *     <li>{@link AnnotationParser#typeParsers Retrieves all currently registered type parsers}</li>
  * </ol>
  *
  * @author allurx
@@ -50,10 +50,12 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class AnnotationParser {
 
     /**
-     * 所有注册的{@link TypeParser}
+     * A synchronized sorted set of all registered {@link TypeParser} instances.
      */
-    private static final SortedSet<TypeParser<?, ? extends AnnotatedType>> TYPE_PARSERS = Collections.synchronizedSortedSet(new TreeSet<>());
+    private static final SortedSet<TypeParser<?, ? extends AnnotatedType>> TYPE_PARSERS =
+            Collections.synchronizedSortedSet(new TreeSet<>());
 
+    // Register default type parsers
     static {
         addTypeParser(new TypeVariableParser());
         addTypeParser(new WildcardTypeParser());
@@ -68,39 +70,41 @@ public final class AnnotationParser {
     }
 
     /**
-     * {@link #parse(Object, AnnotatedType)}的包装方法
+     * A wrapper method for {@link #parse(Object, AnnotatedType)}.
      *
-     * @param value              待解析的对象
-     * @param annotatedTypeToken 待解析对象的{@link AnnotatedTypeToken}
-     * @param <T>                待解析对象的类型
-     * @return 解析后的对象
+     * @param value              The object to be parsed.
+     * @param annotatedTypeToken The {@link AnnotatedTypeToken} of the object.
+     * @param <T>                The type of the object to be parsed.
+     * @return The parsed object.
      */
     public static <T> T parse(T value, AnnotatedTypeToken<T> annotatedTypeToken) {
         return parse(value, annotatedTypeToken.getAnnotatedType());
     }
 
     /**
-     * 对于任何需要解析的Object，它可能继承了一些特殊的数据类型，例如{@link Collection}、{@link Map}等等，
-     * 因此我们在解析对象时需要遍历所有已注册的解析器，只要解析器支持解析该Object，都应该使用该解析器解析对象。
+     * Parses an object that may inherit special data types, such as {@link Collection} or {@link Map}.
+     * This method iterates through all registered parsers and uses any parser that supports the given object.
      *
-     * @param value         待解析的对象
-     * @param annotatedType 待解析对象的{@link AnnotatedType}
-     * @param <T>           待解析对象的类型
-     * @param <AT>          待解析对象的{@link AnnotatedType}的类型
-     * @return 解析后的对象
+     * @param value         The object to be parsed.
+     * @param annotatedType The {@link AnnotatedType} of the object.
+     * @param <T>           The type of the object to be parsed.
+     * @param <AT>          The type of the {@link AnnotatedType}.
+     * @return The parsed object.
      */
     @SuppressWarnings("unchecked")
     public static <T, AT extends AnnotatedType> T parse(T value, AT annotatedType) {
-        return TYPE_PARSERS.stream().filter(tp -> tp.support(value, annotatedType))
+        return TYPE_PARSERS.stream()
+                .filter(tp -> tp.support(value, annotatedType))
                 .reduce(value, (v, tp) -> ((TypeParser<T, AT>) tp).parse(v, annotatedType), (v1, v2) -> null);
     }
 
     /**
-     * 注册自己的类型解析器。<br>
-     * 注意：如果类型解析器的{@link Sortable#order()}方法返回值已经被其它解析器占用了，
-     * 那么该解析器将会被忽略。这是由{@link TreeSet}类的特性所导致的。
+     * Registers a custom type parser.
+     * <br>
+     * Note: If the {@link Sortable#order()} method of the type parser returns a value already used by another parser,
+     * this parser will be ignored due to the behavior of {@link TreeSet}.
      *
-     * @param typeParser 目标类型解析器
+     * @param typeParser The type parser to register.
      * @see TreeSet
      */
     public static void addTypeParser(TypeParser<?, ? extends AnnotatedType> typeParser) {
@@ -108,22 +112,20 @@ public final class AnnotationParser {
     }
 
     /**
-     * 从已注册的类型解析器中移除指定的解析器
+     * Removes the specified type parser from the registered parsers.
      *
-     * @param typeParser 需要移除的类型解析器
+     * @param typeParser The type parser to be removed.
      */
     public static void removeTypeParser(TypeParser<?, ? extends AnnotatedType> typeParser) {
         TYPE_PARSERS.remove(typeParser);
     }
 
     /**
-     * @return 一个不会与已注册的类型解析器顺序冲突的随机顺序值。
-     * <p><strong>注意：不要在类型解析器的{@link Sortable#order()}方法中直接返回该方法。
-     * 应该将该方法的返回值赋值给一个实例或静态变量，然后再返回这个变量。
-     * 因为如果有解析器的顺序是直接返回该方法的话，由于在其它解析器调用这个方法的时候
-     * 是通过遍历已注册解析器的{@link Sortable#order()}方法返回值来确定一个唯一顺序值的，
-     * 此时就会产生无限递归。
-     * </strong></p>
+     * @return A random order value that does not conflict with the order of registered type parsers.
+     * <p><strong>Note: Do not return this method directly in the {@link Sortable#order()} method.
+     * Instead, assign the return value to an instance or static variable before returning it.
+     * If the order is returned directly, it can lead to infinite recursion when other parsers call this method
+     * to determine a unique order value.</strong></p>
      */
     public static int randomOrder() {
         int order = ThreadLocalRandom.current().nextInt(Sortable.HIGHEST_PRIORITY, Sortable.LOWEST_PRIORITY);
@@ -133,11 +135,11 @@ public final class AnnotationParser {
     }
 
     /**
-     * @return 所有已注册的类型解析器，返回结果是一个通过{@link Collections#synchronizedSortedSet(SortedSet)}
-     * 方法包装的{@link SortedSet}，有关线程安全需要注意的事项请自行参照该包装方法。
+     * @return A set of all registered type parsers.
+     * The result is a {@link SortedSet} wrapped by {@link Collections#synchronizedSortedSet(SortedSet)},
+     * please refer to the documentation of this method for thread-safety considerations.
      */
     public static SortedSet<TypeParser<?, ? extends AnnotatedType>> typeParsers() {
         return TYPE_PARSERS;
     }
-
 }

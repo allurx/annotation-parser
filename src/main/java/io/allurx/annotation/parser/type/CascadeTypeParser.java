@@ -28,7 +28,8 @@ import java.util.Arrays;
 import java.util.Optional;
 
 /**
- * 级联类型解析器，只会解析被<b>直接</b>标注{@link Cascade}注解的对象，以及其中的非常量{@link Field}。
+ * Cascade type parser, which only processes objects directly annotated with {@link Cascade}
+ * and their non-constant {@link Field}s.
  *
  * @author allurx
  * @see Cascade
@@ -40,12 +41,17 @@ public class CascadeTypeParser implements TypeParser<Object, AnnotatedType> {
         Class<?> clazz = value.getClass();
         if (clazz.isRecord()) {
             var recordComponents = clazz.getRecordComponents();
-            var componentValues = Arrays.stream(recordComponents).map(rc -> AnnotationParser.parse(Reflections.invokeMethod(value, rc.getAccessor()), rc.getAnnotatedType())).toArray();
-            var constructor = Optional.ofNullable(Reflections.getDeclaredConstructor(clazz, Arrays.stream(recordComponents).map(RecordComponent::getType).toArray(Class<?>[]::new))).orElseThrow();
+            var componentValues = Arrays.stream(recordComponents)
+                    .map(rc -> AnnotationParser.parse(Reflections.invokeMethod(value, rc.getAccessor()), rc.getAnnotatedType()))
+                    .toArray();
+            var constructor = Optional.ofNullable(Reflections.getDeclaredConstructor(clazz,
+                            Arrays.stream(recordComponents).map(RecordComponent::getType).toArray(Class<?>[]::new)))
+                    .orElseThrow();
             return Reflections.newInstance(constructor, componentValues);
         } else {
             Cascade cascade = annotatedType.getDeclaredAnnotation(Cascade.class);
-            return Reflections.listFields(clazz, cascade.inherited()).parallelStream()
+            return Reflections.listFields(clazz, cascade.inherited())
+                    .parallelStream()
                     .filter(field -> !(Modifier.isFinal(field.getModifiers()) && Modifier.isStatic(field.getModifiers())))
                     .reduce(clazz.isEnum() ? value : InstanceCreators.find(clazz).create(),
                             (o, field) -> {

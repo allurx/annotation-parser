@@ -25,26 +25,46 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Field;
 
 /**
- * 解析对象{@link Field}上的注解
+ * Test class for parsing annotations on {@link Field} of an object.
+ * This class contains unit tests to verify the behavior of annotation parsing
+ * with cascade behavior on nested objects.
  *
- * @author zyc
+ * @author allurx
  */
 class CascadeTest {
 
+    /**
+     * Tests the parsing of annotations on a Boy object and its nested Girl object.
+     * It verifies that the parsed names meet the expected masked criteria.
+     */
     @Test
     void test() {
-
+        // Create a Boy object with a nested Girl object.
         var boy = new Boy("Boy", new Girl("Girl"));
+
+        // Parse the Boy object using AnnotationParser with an AnnotatedTypeToken.
         var parsed = AnnotationParser.parse(boy, new AnnotatedTypeToken<@Cascade Boy>() {
         });
 
+        // Verify that both the Boy's name and the nested Girl's name are masked.
         Assertions.assertEquals("******", parsed.name);
         Assertions.assertEquals("******", parsed.girl.name);
     }
 
+    /**
+     * A record representing a Boy with a name and a nested Girl.
+     *
+     * @param name The name of the boy, annotated with {@link EraseString}.
+     * @param girl The Girl object, annotated with {@link Cascade}.
+     */
     record Boy(@EraseString String name, @Cascade Girl girl) {
     }
 
+    /**
+     * A record representing a Girl with a name.
+     *
+     * @param name The name of the girl, annotated with {@link EraseString}.
+     */
     record Girl(@EraseString String name) {
     }
 }

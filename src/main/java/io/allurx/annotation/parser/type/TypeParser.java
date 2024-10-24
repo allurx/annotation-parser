@@ -25,22 +25,24 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * 类型解析器，用来解析不同的类型。例如{@link Collection}，{@link Map}，{@link Array}。
- * 用户可以实现该接口定义特定类型的解析器，然后调用{@link AnnotationParser#addTypeParser}方法注册自己的类型解析器。
- * 对于任何需要解析的Object来说，本质上都可以通过{@link TypeVariable 类型变量}或者{@link WildcardType 通配符}来代表它，
- * 同时object本身也可能需要被解析或者需要解析Object内部的域，因此在注册类型解析器时，需要遵守以下两个约定：
+ * Type parser for parsing different types, such as {@link Collection}, {@link Map}, and {@link Array}.
+ * Users can implement this interface to define specific type parsers and register them by calling
+ * {@link AnnotationParser#addTypeParser} method.
+ * Essentially, any object that needs parsing can be represented by a {@link TypeVariable} or {@link WildcardType},
+ * and the object itself may need to be parsed or may require parsing of its internal fields.
+ * Therefore, when registering type parsers, the following two conventions must be adhered to:
  *
  * <ol>
  *     <li>
- *         类型解析器的执行顺序应该晚于{@link TypeVariableParser}和{@link WildcardTypeParser}这两个解析器。
+ *         The execution order of type parsers should be later than {@link TypeVariableParser} and {@link WildcardTypeParser}.
  *     </li>
  *     <li>
- *         类型解析器的执行顺序应该早于{@link ObjectTypeParser}和{@link CascadeTypeParser}这两个解析器。
+ *         The execution order of type parsers should be earlier than {@link ObjectTypeParser} and {@link CascadeTypeParser}.
  *     </li>
  * </ol>
- * 否则解析的结果可能会和预期不一致。
+ * Otherwise, the parsing results may not be as expected.
  *
- * @param <T>  被解析对象的类型
+ * @param <T>  The type of the object to be parsed
  * @param <AT> {@link AnnotatedType}
  * @author allurx
  * @see CollectionTypeParser
@@ -54,32 +56,32 @@ import java.util.Map;
 public interface TypeParser<T, AT extends AnnotatedType> extends Sortable, Comparable<TypeParser<?, ? extends AnnotatedType>> {
 
     /**
-     * 解析对象，实现该方法的子类如果能够解析目标对象，应当<b>尽可能</b>返回一个新的{@link T}实例
+     * Parses the object. Subclasses implementing this method should return a new {@link T} instance
+     * if they can parse the target object <b>whenever possible</b>.
      *
-     * @param value         被解析的对象
-     * @param annotatedType 被解析对象的{@link AnnotatedType}
-     * @return 解析后的新对象
+     * @param value         The object to be parsed
+     * @param annotatedType The {@link AnnotatedType} of the object to be parsed
+     * @return The newly parsed object
      */
     T parse(T value, AT annotatedType);
 
     /**
-     * 是否支持解析目标对象
+     * Determines whether the parser supports parsing the target object.
      *
-     * @param value         被解析的对象
-     * @param annotatedType 被解析对象的{@link AnnotatedType}
-     * @return 是否支持解析目标对象
+     * @param value         The object to be parsed
+     * @param annotatedType The {@link AnnotatedType} of the object to be parsed
+     * @return Whether the parser supports parsing the target object
      */
     boolean support(Object value, AnnotatedType annotatedType);
 
     /**
-     * 解析器执行顺序
+     * Execution order of the parser.
      *
-     * @param typeParser 解析器
-     * @return 解析器执行顺序
+     * @param typeParser The parser to compare with
+     * @return The execution order of the parser
      */
     @Override
     default int compareTo(TypeParser<?, ? extends AnnotatedType> typeParser) {
         return Integer.compare(order(), typeParser.order());
     }
-
 }

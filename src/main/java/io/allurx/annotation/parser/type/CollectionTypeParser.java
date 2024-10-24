@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * 泛型{@link Collection}类型解析器
+ * Generic {@link Collection} type parser.
  *
  * @author allurx
  */
@@ -33,7 +33,8 @@ public class CollectionTypeParser implements TypeParser<Collection<Object>, Anno
 
     @Override
     public Collection<Object> parse(Collection<Object> value, AnnotatedParameterizedType annotatedParameterizedType) {
-        return value.parallelStream().map(o -> AnnotationParser.parse(o, annotatedParameterizedType.getAnnotatedActualTypeArguments()[0]))
+        return value.parallelStream()
+                .map(o -> AnnotationParser.parse(o, annotatedParameterizedType.getAnnotatedActualTypeArguments()[0]))
                 .collect(Collectors.toCollection(() -> InstanceCreators.find(Reflections.getClass(value)).create()));
     }
 

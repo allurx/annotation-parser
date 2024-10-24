@@ -24,7 +24,11 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 /**
- * {@link WildcardType}类型解析器
+ * {@link WildcardType} type parser.
+ * <p>
+ * This class is responsible for parsing annotated wildcard types.
+ * It processes both upper and lower bounds of the wildcard type,
+ * applying custom parsing logic based on the annotations defined on these bounds.
  *
  * @author allurx
  */
@@ -33,7 +37,8 @@ public class WildcardTypeParser implements TypeParser<Object, AnnotatedWildcardT
     @Override
     public Object parse(Object value, AnnotatedWildcardType annotatedWildcardType) {
         return Stream.of(annotatedWildcardType.getAnnotatedUpperBounds(), annotatedWildcardType.getAnnotatedLowerBounds())
-                .flatMap(Arrays::stream).reduce(value, AnnotationParser::parse, (v1, v2) -> null);
+                .flatMap(Arrays::stream)
+                .reduce(value, AnnotationParser::parse, (v1, v2) -> null);
     }
 
     @Override

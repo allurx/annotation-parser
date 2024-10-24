@@ -24,7 +24,7 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 
 /**
- * {@link Array}类型解析器
+ * Parser for {@link Array} types.
  *
  * @author allurx
  */
@@ -32,7 +32,9 @@ public class ArrayTypeParser implements TypeParser<Object[], AnnotatedArrayType>
 
     @Override
     public Object[] parse(Object[] value, AnnotatedArrayType annotatedArrayType) {
-        return Arrays.stream(value).parallel().map(o -> AnnotationParser.parse(o, annotatedArrayType.getAnnotatedGenericComponentType()))
+        return Arrays.stream(value)
+                .parallel()
+                .map(o -> AnnotationParser.parse(o, annotatedArrayType.getAnnotatedGenericComponentType()))
                 .<Object>toArray(length -> Reflections.newArray(value.getClass().getComponentType(), length));
     }
 

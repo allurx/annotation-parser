@@ -26,7 +26,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author zyc
+ * Annotation to indicate that the annotated {@link String}
+ * should be erased or masked when processed.
+ * <p>
+ * This annotation is intended for use with the {@link EraseStringAnnotationHandler}
+ * to handle the logic for erasing or modifying string representations at runtime.
+ *
+ * @author allurx
  */
 @Target({ElementType.TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -34,3 +40,4 @@ import java.lang.annotation.Target;
 @Parse(handler = EraseStringAnnotationHandler.class, annotation = EraseString.class)
 public @interface EraseString {
 }
+

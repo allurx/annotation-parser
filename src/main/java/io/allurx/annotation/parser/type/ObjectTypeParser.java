@@ -16,10 +16,10 @@
 
 package io.allurx.annotation.parser.type;
 
-import io.allurx.annotation.parser.util.InstanceCreators;
 import io.allurx.annotation.parser.handler.AnnotationHandler;
 import io.allurx.annotation.parser.handler.Location;
 import io.allurx.annotation.parser.handler.Parse;
+import io.allurx.annotation.parser.util.InstanceCreators;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
@@ -29,7 +29,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * 找出对象上所有被{@link Parse}标记的注解，并按照这些注解出现的顺序解析对象
+ * Finds all annotations marked with {@link Parse} on the object and parses the object in the order these annotations appear.
  *
  * @author allurx
  * @see Parse
@@ -43,7 +43,9 @@ public class ObjectTypeParser implements TypeParser<Object, AnnotatedType> {
                 .map(annotation -> annotation.annotationType().getDeclaredAnnotation(Parse.class))
                 .filter(Objects::nonNull)
                 .map(parse -> parseAnnotation(value, annotatedType, parse))
-                .reduce(value, (o, parsedInfo) -> parsedInfo.annotations.stream().reduce(value, parsedInfo.annotationHandler::handle, (v1, v2) -> null), (v1, v2) -> null);
+                .reduce(value, (o, parsedInfo) -> parsedInfo.annotations.stream()
+                                .reduce(value, parsedInfo.annotationHandler::handle, (v1, v2) -> null),
+                        (v1, v2) -> null);
     }
 
     @Override
@@ -57,12 +59,12 @@ public class ObjectTypeParser implements TypeParser<Object, AnnotatedType> {
     }
 
     /**
-     * 解析目标对象上符合条件的所有注解
+     * Parses all annotations on the target object that meet the specified conditions.
      *
-     * @param value         待解析的对象
+     * @param value         The object to be parsed.
      * @param annotatedType {@link AnnotatedType}
      * @param parse         {@link Parse}
-     * @return {@link ParsedInfo}
+     * @return {@link ParsedInfo} containing parsed annotations and their handler.
      */
     private ParsedInfo parseAnnotation(Object value, AnnotatedType annotatedType, Parse parse) {
         @SuppressWarnings("unchecked")
@@ -88,13 +90,12 @@ public class ObjectTypeParser implements TypeParser<Object, AnnotatedType> {
     }
 
     /**
-     * 解析后的信息
+     * Information about parsed annotations.
      *
-     * @param annotations       符合解析条件的所有注解
-     * @param annotationHandler 注解处理器
+     * @param annotations       All annotations that meet the parsing conditions.
+     * @param annotationHandler The handler for the annotations.
      */
     record ParsedInfo(HashSet<Annotation> annotations,
                       AnnotationHandler<Object, Annotation, Object> annotationHandler) {
     }
-
 }

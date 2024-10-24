@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 
 /**
- * 被该注解标记的对象表明需要对其{@link Field}进行解析处理。
+ * Indicates that the annotated object requires parsing of its {@link Field}s.
  *
  * @author allurx
  */
@@ -34,9 +34,9 @@ import java.lang.reflect.Field;
 public @interface Cascade {
 
     /**
-     * 是否解析从父类继承的{@link Field}
+     * Determines whether to parse {@link Field}s inherited from parent classes.
      *
-     * @return 是否解析从父类继承的 {@link Field}
+     * @return true if inherited {@link Field}s should be parsed, false otherwise
      */
     boolean inherited() default false;
 }

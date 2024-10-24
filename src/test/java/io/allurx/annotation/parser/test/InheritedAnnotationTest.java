@@ -16,12 +16,12 @@
 package io.allurx.annotation.parser.test;
 
 import io.allurx.annotation.parser.AnnotationParser;
-import io.allurx.kit.base.reflection.AnnotatedTypeToken;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import io.allurx.annotation.parser.handler.AnnotationHandler;
 import io.allurx.annotation.parser.handler.Location;
 import io.allurx.annotation.parser.handler.Parse;
+import io.allurx.kit.base.reflection.AnnotatedTypeToken;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -31,9 +31,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 解析{@link Inherited}注解
+ * Tests the parsing of the {@link Accumulator} annotation.
+ * <p>
+ * This test verifies that the value from the inherited {@link Accumulator} annotation
+ * on the superclass is correctly added to the field in the subclass.
+ * </p>
  *
- * @author zyc
+ * @author allurx
  */
 class InheritedAnnotationTest {
 
@@ -46,27 +50,48 @@ class InheritedAnnotationTest {
         Assertions.assertEquals(3, parsed.i);
     }
 
+    /**
+     * Annotation to accumulate a value.
+     * <p>
+     * This annotation can be applied to type uses and is inherited by subclasses.
+     * </p>
+     */
     @Parse(handler = AccumulatorHandler.class, annotation = Accumulator.class, location = Location.PRESENT)
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @Inherited
     @interface Accumulator {
-
         int value();
     }
 
+    /**
+     * Subclass that extends {@link Super}.
+     * <p>
+     * Contains an integer field that will accumulate values from the {@link Accumulator} annotation.
+     * </p>
+     */
     static class Sub extends Super {
         int i = 0;
     }
 
+    /**
+     * Superclass with an {@link Accumulator} annotation.
+     * <p>
+     * Inherits the accumulated value from this annotation in subclasses.
+     * </p>
+     */
     @Accumulator(2)
     static class Super {
-
     }
 
+    /**
+     * Handler for processing the {@link Accumulator} annotation.
+     * <p>
+     * This handler adds the value from the annotation to the integer field of the subclass.
+     * </p>
+     */
     static class AccumulatorHandler implements AnnotationHandler<Sub, Accumulator, Sub> {
-
         @Override
         public Sub handle(Sub sub, Accumulator annotation) {
             sub.i += annotation.value();
