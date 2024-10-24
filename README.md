@@ -1,18 +1,25 @@
 # annotation-parser
-基于Java反射api解析任意数据结构中的自定义注解
-# 用法
-## JDK版本
-JDK21
-## maven依赖
+
+**A library for parsing custom annotations in various data structures using the Java Reflection API.**
+
+## JDK Version
+
+**JDK 21**
+
+## Maven Dependency
+
 ```xml
 <dependency>
-    <groupId>red.zyc</groupId>
+    <groupId>io.allurx</groupId>
     <artifactId>annotation-parser</artifactId>
-    <version>1.0.0</version>
+    <version>${latest version}</version>
 </dependency>
 ```
-## 例子
-自定义注解
+
+## Example
+
+### Custom Annotation
+
 ```java
 @Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -21,7 +28,9 @@ JDK21
 public @interface EraseString {
 }
 ```
-编写注解处理器
+
+### Writing an Annotation Handler
+
 ```java
 public class EraseStringAnnotationHandler implements AnnotationHandler<String, EraseString, String> {
 
@@ -31,34 +40,35 @@ public class EraseStringAnnotationHandler implements AnnotationHandler<String, E
     }
 }
 ```
-最后通过[AnnotationParser](https://github.com/allurx/annotation-parser/blob/master/src/main/java/red/zyc/parser/AnnotationParser.java)则可以在任意数据结构中解析该注解
+
+### Parsing with AnnotationParser
+
+You can parse the annotation in any data structure using the `AnnotationParser`. Here are some examples:
+
 ```java
 void parse() {
 
     // String
     var v1 = AnnotationParser.parse("123456", new AnnotatedTypeToken<@EraseString String>() {
     });
-    assert "******".equals(v1);
+    assertEquals("******", v1);
 
     // Collection
     var v2 = AnnotationParser.parse(Stream.of("123456").collect(Collectors.toList()), new AnnotatedTypeToken<List<@EraseString String>>() {
     });
-    v2.forEach(s -> {
-        assert "******".equals(s);
-    });
+    v2.forEach(s -> assertEquals("******", s));
 
     // Array
     var v3 = AnnotationParser.parse(new String[]{"123456"}, new AnnotatedTypeToken<@EraseString String[]>() {
     });
-    Arrays.stream(v3).forEach(s -> {
-        assert "******".equals(s);
-    });
+    Arrays.stream(v3).forEach(s -> assertEquals("******", s));
 
     // Map
-    var v4 = AnnotationParser.parse(Stream.of("张三").collect(Collectors.toMap(s -> s, s -> "123456")), new AnnotatedTypeToken<Map<@EraseString String, @EraseString String>>() {
+    var v4 = AnnotationParser.parse(Stream.of("allurx").collect(Collectors.toMap(s -> s, s -> "123456")), new AnnotatedTypeToken<Map<@EraseString String, @EraseString String>>() {
     });
     v4.forEach((s1, s2) -> {
-        assert "******".equals(s1) && "******".equals(s2);
+        assertEquals("******", s1);
+        assertEquals("******", s2);
     });
 
     // Object
@@ -66,15 +76,18 @@ void parse() {
     }
     var v5 = AnnotationParser.parse(new Person("123456"), new AnnotatedTypeToken<@Cascade Person>() {
     });
-    assert "******".equals(v5.password);
+    assertEquals("******", v5.password);
 }
 ```
-# 原理
-annotation-parser库是基于JDK1.8新增的`AnnotatedType`类型体系并通过责任链这种设计模式来解析任意数据结构中自定义注解的，要想完全理解其背后的实现原理需要对Java的`Type`体系和`AnnotatedType`体系有较为深刻的理解，可以参考以下几篇文章进行深入了解。
 
-* [Java Type](https://www.zyc.red/Java/Reflection/Type)
-* [Java AnnotatedType](https://www.zyc.red/Java/Reflection/AnnotatedType)
-* [Java AnnotatedElement](https://www.zyc.red/Java/Reflection/AnnotatedElement)
+## Principles
 
-# License
-[Apache License 2.0](https://github.com/allurx/annotation-parser/blob/master/LICENSE.txt)
+The `annotation-parser` library is built on the `AnnotatedType` type system introduced in JDK 1.8 and utilizes the Chain of Responsibility design pattern to parse custom annotations in arbitrary data structures. A thorough understanding of Java's `Type` and `AnnotatedType` systems is essential for grasping the underlying implementation principles. For deeper insights, consider reading the following articles:
+
+- [Java Type](https://www.zyc.red/Java/Reflection/Type)
+- [Java AnnotatedType](https://www.zyc.red/Java/Reflection/AnnotatedType)
+- [Java AnnotatedElement](https://www.zyc.red/Java/Reflection/AnnotatedElement)
+
+## License
+
+This project is licensed under the [Apache License 2.0](https://github.com/allurx/annotation-parser/blob/master/LICENSE.txt).

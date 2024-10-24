@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 /**
- * annotation-parser module
+ * annotation-parser test module
  *
  * @author allurx
  */
-module io.allurx.annotation.parser {
+module io.allurx.annotation.parser.test {
+    requires org.junit.jupiter.api;
     requires io.allurx.kit.base;
-    exports io.allurx.annotation.parser;
-    exports io.allurx.annotation.parser.handler;
-    exports io.allurx.annotation.parser.type;
-    exports io.allurx.annotation.parser.util;
+    requires io.allurx.annotation.parser;
+    exports io.allurx.annotation.parser.test.annotation;
+    exports io.allurx.annotation.parser.test.handler;
+    opens io.allurx.annotation.parser.test.annotation;
+    opens io.allurx.annotation.parser.test.handler;
 }

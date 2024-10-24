@@ -13,15 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.allurx.annotation.parser.util;
+
 /**
- * annotation-parser module
+ * Custom exception class for handling reflection-related errors.
+ * This exception extends {@link RuntimeException} and does not need to be
+ * declared in a method's `throws` clause.
  *
  * @author allurx
  */
-module io.allurx.annotation.parser {
-    requires io.allurx.kit.base;
-    exports io.allurx.annotation.parser;
-    exports io.allurx.annotation.parser.handler;
-    exports io.allurx.annotation.parser.type;
-    exports io.allurx.annotation.parser.util;
+public class ReflectionException extends RuntimeException {
+
+    /**
+     * Constructs a new {@code ReflectionException} with the specified detail message
+     * and cause.
+     *
+     * @param message the detail message
+     * @param cause   the cause (can be null)
+     */
+    public ReflectionException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }

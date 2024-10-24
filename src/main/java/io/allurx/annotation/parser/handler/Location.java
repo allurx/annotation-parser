@@ -13,15 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.allurx.annotation.parser.handler;
+
+import java.lang.reflect.AnnotatedElement;
+
 /**
- * annotation-parser module
+ * Defines where the annotation appears on the target object.
  *
  * @author allurx
+ * @see AnnotatedElement
  */
-module io.allurx.annotation.parser {
-    requires io.allurx.kit.base;
-    exports io.allurx.annotation.parser;
-    exports io.allurx.annotation.parser.handler;
-    exports io.allurx.annotation.parser.type;
-    exports io.allurx.annotation.parser.util;
+public enum Location {
+
+    /**
+     * Directly present on the target.
+     */
+    DIRECTLY_PRESENT,
+
+    /**
+     * Indirectly present on the target.
+     */
+    INDIRECTLY_PRESENT,
+
+    /**
+     * Present on the target.
+     */
+    PRESENT,
+
+    /**
+     * Associated with the target.
+     */
+    ASSOCIATED
 }
