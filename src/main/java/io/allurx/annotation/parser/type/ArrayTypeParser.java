@@ -30,6 +30,12 @@ import java.util.Arrays;
  */
 public class ArrayTypeParser implements TypeParser<Object[], AnnotatedArrayType> {
 
+    /**
+     * Default constructor
+     */
+    public ArrayTypeParser() {
+    }
+
     @Override
     public Object[] parse(Object[] value, AnnotatedArrayType annotatedArrayType) {
         return Arrays.stream(value)

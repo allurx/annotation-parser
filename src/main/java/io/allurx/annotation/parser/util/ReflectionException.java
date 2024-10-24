@@ -16,19 +16,23 @@
 package io.allurx.annotation.parser.util;
 
 /**
- * Custom exception class to handle reflection-related errors.
- * This exception extends {@link RuntimeException}, allowing it to be thrown
- * during the normal operation of the Java Virtual Machine (JVM) without
- * needing to be declared in a method's `throws` clause.
- *
- * <p> It provides constructors for setting an error message and
- * an underlying cause for the exception.
+ * Custom exception class for handling reflection-related errors.
+ * This exception extends {@link RuntimeException} and does not need to be
+ * declared in a method's `throws` clause.
  *
  * @author allurx
  */
 public class ReflectionException extends RuntimeException {
 
+    /**
+     * Constructs a new {@code ReflectionException} with the specified detail message
+     * and cause.
+     *
+     * @param message the detail message
+     * @param cause   the cause (can be null)
+     */
     public ReflectionException(String message, Throwable cause) {
         super(message, cause);
     }
+
 }

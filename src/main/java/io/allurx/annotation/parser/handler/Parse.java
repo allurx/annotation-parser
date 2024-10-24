@@ -35,16 +35,22 @@ import java.lang.annotation.Target;
 public @interface Parse {
 
     /**
+     * The handler for the {@link #annotation()}.
+     *
      * @return the handler for the {@link #annotation()}.
      */
     Class<? extends AnnotationHandler<?, ? extends Annotation, ?>> handler();
 
     /**
+     * The type of annotation to be parsed.
+     *
      * @return the type of annotation to be parsed.
      */
     Class<? extends Annotation> annotation();
 
     /**
+     * How the {@link #annotation()} is present on the target object.
+     *
      * @return how the {@link #annotation()} is present on the target object.
      */
     Location[] location() default Location.DIRECTLY_PRESENT;

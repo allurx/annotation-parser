@@ -31,6 +31,12 @@ import java.util.stream.Collectors;
  */
 public class CollectionTypeParser implements TypeParser<Collection<Object>, AnnotatedParameterizedType> {
 
+    /**
+     * Default constructor
+     */
+    public CollectionTypeParser() {
+    }
+
     @Override
     public Collection<Object> parse(Collection<Object> value, AnnotatedParameterizedType annotatedParameterizedType) {
         return value.parallelStream()

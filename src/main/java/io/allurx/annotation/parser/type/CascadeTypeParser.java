@@ -36,6 +36,12 @@ import java.util.Optional;
  */
 public class CascadeTypeParser implements TypeParser<Object, AnnotatedType> {
 
+    /**
+     * Default constructor
+     */
+    public CascadeTypeParser() {
+    }
+
     @Override
     public Object parse(Object value, AnnotatedType annotatedType) {
         Class<?> clazz = value.getClass();

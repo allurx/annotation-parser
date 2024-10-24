@@ -34,6 +34,12 @@ import java.util.stream.Stream;
  */
 public class WildcardTypeParser implements TypeParser<Object, AnnotatedWildcardType> {
 
+    /**
+     * Default constructor
+     */
+    public WildcardTypeParser() {
+    }
+
     @Override
     public Object parse(Object value, AnnotatedWildcardType annotatedWildcardType) {
         return Stream.of(annotatedWildcardType.getAnnotatedUpperBounds(), annotatedWildcardType.getAnnotatedLowerBounds())

@@ -37,6 +37,12 @@ import java.util.Optional;
  */
 public class ObjectTypeParser implements TypeParser<Object, AnnotatedType> {
 
+    /**
+     * Default constructor
+     */
+    public ObjectTypeParser() {
+    }
+
     @Override
     public Object parse(Object value, AnnotatedType annotatedType) {
         return Arrays.stream(annotatedType.getDeclaredAnnotations())

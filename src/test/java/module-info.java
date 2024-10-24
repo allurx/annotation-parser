@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 /**
+ * annotation-parser test module
+ *
  * @author allurx
  */
 module io.allurx.annotation.parser.test {

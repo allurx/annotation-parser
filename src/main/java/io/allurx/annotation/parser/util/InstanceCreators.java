@@ -41,7 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * </pre>
  * In the `Person` class, there is only one parameterized constructor without a no-argument constructor.
  * This class provides mechanisms to register instance creators that can handle such cases
- * during object initialization.</p>
+ * during object initialization.
  *
  * <p><strong>Note:</strong> Avoid registering instance creators for primitive types,
  * interface types, abstract types, or array types, as these are generally not meaningful.
@@ -105,6 +105,8 @@ public final class InstanceCreators {
     }
 
     /**
+     * a map of all registered instance creators
+     *
      * @return a map of all registered instance creators
      */
     public static Map<Class<?>, InstanceCreator<?>> instanceCreators() {

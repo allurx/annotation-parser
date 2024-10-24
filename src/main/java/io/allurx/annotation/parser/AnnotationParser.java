@@ -121,6 +121,8 @@ public final class AnnotationParser {
     }
 
     /**
+     * A random order value that does not conflict with the order of registered type parsers.
+     *
      * @return A random order value that does not conflict with the order of registered type parsers.
      * <p><strong>Note: Do not return this method directly in the {@link Sortable#order()} method.
      * Instead, assign the return value to an instance or static variable before returning it.
@@ -135,6 +137,8 @@ public final class AnnotationParser {
     }
 
     /**
+     * A set of all registered type parsers.
+     *
      * @return A set of all registered type parsers.
      * The result is a {@link SortedSet} wrapped by {@link Collections#synchronizedSortedSet(SortedSet)},
      * please refer to the documentation of this method for thread-safety considerations.

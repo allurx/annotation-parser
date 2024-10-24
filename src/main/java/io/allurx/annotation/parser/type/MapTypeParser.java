@@ -31,6 +31,12 @@ import java.util.stream.Collectors;
  */
 public class MapTypeParser implements TypeParser<Map<Object, Object>, AnnotatedParameterizedType> {
 
+    /**
+     * Default constructor
+     */
+    public MapTypeParser() {
+    }
+
     @Override
     public Map<Object, Object> parse(Map<Object, Object> value, AnnotatedParameterizedType annotatedParameterizedType) {
         AnnotatedType[] annotatedActualTypeArguments = annotatedParameterizedType.getAnnotatedActualTypeArguments();

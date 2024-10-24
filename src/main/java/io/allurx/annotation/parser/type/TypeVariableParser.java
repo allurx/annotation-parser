@@ -33,6 +33,12 @@ import java.util.Arrays;
  */
 public class TypeVariableParser implements TypeParser<Object, AnnotatedTypeVariable> {
 
+    /**
+     * Default constructor
+     */
+    public TypeVariableParser() {
+    }
+
     @Override
     public Object parse(Object value, AnnotatedTypeVariable annotatedTypeVariable) {
         return Arrays.stream(annotatedTypeVariable.getAnnotatedBounds())
