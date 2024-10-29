@@ -1,6 +1,6 @@
 # annotation-parser
 
-**A library for parsing custom annotations in various data structures using the Java Reflection API.**
+**A library for parsing custom annotations in any data structures.**
 
 ## JDK Version
 
@@ -90,4 +90,4 @@ The `annotation-parser` library is built on the `AnnotatedType` type system intr
 
 ## License
 
-This project is licensed under the [Apache License 2.0](https://github.com/allurx/annotation-parser/blob/master/LICENSE.txt).
+This project is licensed under the [Apache License 2.0](LICENSE.txt).
