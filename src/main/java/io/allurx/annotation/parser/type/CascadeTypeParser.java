@@ -42,12 +42,12 @@ public class CascadeTypeParser implements TypeParser<Object, AnnotatedType> {
     }
 
     @Override
-    public Object parse(Object value, AnnotatedType annotatedType) {
-        Class<?> clazz = value.getClass();
+    public Object parse(Object input, AnnotatedType annotatedType) {
+        Class<?> clazz = input.getClass();
         if (clazz.isRecord()) {
             var recordComponents = clazz.getRecordComponents();
             var componentValues = Arrays.stream(recordComponents)
-                    .map(rc -> AnnotationParser.parse(Reflections.invokeMethod(value, rc.getAccessor()), rc.getAnnotatedType()))
+                    .map(rc -> AnnotationParser.parse(Reflections.invokeMethod(input, rc.getAccessor()), rc.getAnnotatedType()))
                     .toArray();
             var constructor = Optional.ofNullable(Reflections.getDeclaredConstructor(clazz,
                             Arrays.stream(recordComponents).map(RecordComponent::getType).toArray(Class<?>[]::new)))
@@ -58,9 +58,9 @@ public class CascadeTypeParser implements TypeParser<Object, AnnotatedType> {
             return Reflections.listFields(clazz, cascade.inherited())
                     .parallelStream()
                     .filter(field -> !(Modifier.isFinal(field.getModifiers()) && Modifier.isStatic(field.getModifiers())))
-                    .reduce(clazz.isEnum() ? value : InstanceCreators.find(clazz).create(),
+                    .reduce(clazz.isEnum() ? input : InstanceCreators.find(clazz).create(),
                             (o, field) -> {
-                                var fieldValue = Reflections.getFieldValue(value, field);
+                                var fieldValue = Reflections.getFieldValue(input, field);
                                 Reflections.setFieldValue(o, field, AnnotationParser.parse(fieldValue, field.getAnnotatedType()));
                                 return o;
                             }, (o1, o2) -> o1);
@@ -68,8 +68,8 @@ public class CascadeTypeParser implements TypeParser<Object, AnnotatedType> {
     }
 
     @Override
-    public boolean support(Object value, AnnotatedType annotatedType) {
-        return value != null && annotatedType.getDeclaredAnnotation(Cascade.class) != null;
+    public boolean support(Object input, AnnotatedType annotatedType) {
+        return input != null && annotatedType.getDeclaredAnnotation(Cascade.class) != null;
     }
 
     @Override

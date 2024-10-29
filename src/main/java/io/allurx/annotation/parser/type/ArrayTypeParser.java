@@ -37,21 +37,20 @@ public class ArrayTypeParser implements TypeParser<Object[], AnnotatedArrayType>
     }
 
     @Override
-    public Object[] parse(Object[] value, AnnotatedArrayType annotatedArrayType) {
-        return Arrays.stream(value)
+    public Object[] parse(Object[] input, AnnotatedArrayType annotatedArrayType) {
+        return Arrays.stream(input)
                 .parallel()
                 .map(o -> AnnotationParser.parse(o, annotatedArrayType.getAnnotatedGenericComponentType()))
-                .<Object>toArray(length -> Reflections.newArray(value.getClass().getComponentType(), length));
+                .<Object>toArray(length -> Reflections.newArray(input.getClass().getComponentType(), length));
     }
 
     @Override
-    public boolean support(Object value, AnnotatedType annotatedType) {
-        return value instanceof Object[] && annotatedType instanceof AnnotatedArrayType;
+    public boolean support(Object input, AnnotatedType annotatedType) {
+        return input instanceof Object[] && annotatedType instanceof AnnotatedArrayType;
     }
 
     @Override
     public int order() {
         return 2;
     }
-
 }

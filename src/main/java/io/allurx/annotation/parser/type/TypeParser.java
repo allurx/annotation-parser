@@ -57,22 +57,22 @@ public interface TypeParser<T, AT extends AnnotatedType> extends Sortable, Compa
 
     /**
      * Parses the object. Subclasses implementing this method should return a new {@link T} instance
-     * if they can parse the target object <b>whenever possible</b>.
+     * if they can parse the input <b>whenever possible</b>.
      *
-     * @param value         The object to be parsed
+     * @param input         The object to be parsed
      * @param annotatedType The {@link AnnotatedType} of the object to be parsed
      * @return The newly parsed object
      */
-    T parse(T value, AT annotatedType);
+    T parse(T input, AT annotatedType);
 
     /**
-     * Determines whether the parser supports parsing the target object.
+     * Determines whether the parser supports parsing the input object.
      *
-     * @param value         The object to be parsed
+     * @param input         The object to be parsed
      * @param annotatedType The {@link AnnotatedType} of the object to be parsed
-     * @return Whether the parser supports parsing the target object
+     * @return Whether the parser supports parsing the input object
      */
-    boolean support(Object value, AnnotatedType annotatedType);
+    boolean support(Object input, AnnotatedType annotatedType);
 
     /**
      * Execution order of the parser.

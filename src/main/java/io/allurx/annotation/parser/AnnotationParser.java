@@ -37,15 +37,13 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Entry point for annotation parsing, providing various useful helper methods.
  * <ol>
- *     <li>{@link AnnotationParser#parse(Object, AnnotatedTypeToken) Parses an object based on the AnnotatedTypeToken}</li>
- *     <li>{@link AnnotationParser#parse(Object, AnnotatedType) Parses an object based on the AnnotatedType}</li>
+ *     <li>{@link AnnotationParser#parse(Object, AnnotatedTypeToken) Parses an input based on the AnnotatedTypeToken}</li>
+ *     <li>{@link AnnotationParser#parse(Object, AnnotatedType) Parses an input based on the AnnotatedType}</li>
  *     <li>{@link AnnotationParser#addTypeParser Adds a custom type parser}</li>
  *     <li>{@link AnnotationParser#removeTypeParser Removes a registered type parser}</li>
  *     <li>{@link AnnotationParser#randomOrder Generates a random order value that does not conflict with registered type parsers' order}</li>
  *     <li>{@link AnnotationParser#typeParsers Retrieves all currently registered type parsers}</li>
  * </ol>
- *
- * @author allurx
  */
 public final class AnnotationParser {
 
@@ -72,30 +70,30 @@ public final class AnnotationParser {
     /**
      * A wrapper method for {@link #parse(Object, AnnotatedType)}.
      *
-     * @param value              The object to be parsed.
+     * @param input              The input object to be parsed.
      * @param annotatedTypeToken The {@link AnnotatedTypeToken} of the object.
      * @param <T>                The type of the object to be parsed.
      * @return The parsed object.
      */
-    public static <T> T parse(T value, AnnotatedTypeToken<T> annotatedTypeToken) {
-        return parse(value, annotatedTypeToken.getAnnotatedType());
+    public static <T> T parse(T input, AnnotatedTypeToken<T> annotatedTypeToken) {
+        return parse(input, annotatedTypeToken.getAnnotatedType());
     }
 
     /**
-     * Parses an object that may inherit special data types, such as {@link Collection} or {@link Map}.
-     * This method iterates through all registered parsers and uses any parser that supports the given object.
+     * Parses an input that may inherit special data types, such as {@link Collection} or {@link Map}.
+     * This method iterates through all registered parsers and uses any parser that supports the given input.
      *
-     * @param value         The object to be parsed.
+     * @param input         The input object to be parsed.
      * @param annotatedType The {@link AnnotatedType} of the object.
      * @param <T>           The type of the object to be parsed.
      * @param <AT>          The type of the {@link AnnotatedType}.
      * @return The parsed object.
      */
     @SuppressWarnings("unchecked")
-    public static <T, AT extends AnnotatedType> T parse(T value, AT annotatedType) {
+    public static <T, AT extends AnnotatedType> T parse(T input, AT annotatedType) {
         return TYPE_PARSERS.stream()
-                .filter(tp -> tp.support(value, annotatedType))
-                .reduce(value, (v, tp) -> ((TypeParser<T, AT>) tp).parse(v, annotatedType), (v1, v2) -> null);
+                .filter(tp -> tp.support(input, annotatedType))
+                .reduce(input, (v, tp) -> ((TypeParser<T, AT>) tp).parse(v, annotatedType), (v1, v2) -> null);
     }
 
     /**
@@ -105,7 +103,6 @@ public final class AnnotationParser {
      * this parser will be ignored due to the behavior of {@link TreeSet}.
      *
      * @param typeParser The type parser to register.
-     * @see TreeSet
      */
     public static void addTypeParser(TypeParser<?, ? extends AnnotatedType> typeParser) {
         TYPE_PARSERS.add(typeParser);
@@ -121,9 +118,9 @@ public final class AnnotationParser {
     }
 
     /**
-     * A random order value that does not conflict with the order of registered type parsers.
+     * Generates a random order value that does not conflict with the order of registered type parsers.
      *
-     * @return A random order value that does not conflict with the order of registered type parsers.
+     * @return A random order value that does not conflict with registered type parsers' order values.
      * <p><strong>Note: Do not return this method directly in the {@link Sortable#order()} method.
      * Instead, assign the return value to an instance or static variable before returning it.
      * If the order is returned directly, it can lead to infinite recursion when other parsers call this method
@@ -137,11 +134,11 @@ public final class AnnotationParser {
     }
 
     /**
-     * A set of all registered type parsers.
+     * Retrieves all currently registered type parsers.
      *
      * @return A set of all registered type parsers.
      * The result is a {@link SortedSet} wrapped by {@link Collections#synchronizedSortedSet(SortedSet)},
-     * please refer to the documentation of this method for thread-safety considerations.
+     * providing thread-safe access.
      */
     public static SortedSet<TypeParser<?, ? extends AnnotatedType>> typeParsers() {
         return TYPE_PARSERS;

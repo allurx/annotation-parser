@@ -25,11 +25,12 @@ import java.util.Arrays;
 /**
  * {@link TypeVariable} type parser.
  * <p>
- * This class is responsible for parsing annotated type variables.
- * It processes the bounds of the type variable, allowing for custom parsing
- * based on the annotations defined on those bounds.
+ * This class is responsible for parsing annotated type variables,
+ * processing the bounds of the type variable based on custom annotations
+ * defined on those bounds.
+ * </p>
  *
- * @author allurx
+ * @see TypeVariable
  */
 public class TypeVariableParser implements TypeParser<Object, AnnotatedTypeVariable> {
 
@@ -40,14 +41,14 @@ public class TypeVariableParser implements TypeParser<Object, AnnotatedTypeVaria
     }
 
     @Override
-    public Object parse(Object value, AnnotatedTypeVariable annotatedTypeVariable) {
+    public Object parse(Object input, AnnotatedTypeVariable annotatedTypeVariable) {
         return Arrays.stream(annotatedTypeVariable.getAnnotatedBounds())
-                .reduce(value, AnnotationParser::parse, (v1, v2) -> null);
+                .reduce(input, AnnotationParser::parse, (v1, v2) -> null);
     }
 
     @Override
-    public boolean support(Object value, AnnotatedType annotatedType) {
-        return value != null && annotatedType instanceof AnnotatedTypeVariable;
+    public boolean support(Object input, AnnotatedType annotatedType) {
+        return input != null && annotatedType instanceof AnnotatedTypeVariable;
     }
 
     @Override

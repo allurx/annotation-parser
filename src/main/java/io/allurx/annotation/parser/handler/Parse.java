@@ -49,11 +49,12 @@ public @interface Parse {
     Class<? extends Annotation> annotation();
 
     /**
-     * How the {@link #annotation()} is present on the target object.
+     * How the {@link #annotation()} is present on the input.
      *
-     * @return how the {@link #annotation()} is present on the target object.
+     * @return how the {@link #annotation()} is present on the input.
      */
     Location[] location() default Location.DIRECTLY_PRESENT;
 
 }
+
 

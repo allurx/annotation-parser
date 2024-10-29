@@ -18,7 +18,7 @@ package io.allurx.annotation.parser.handler;
 import java.lang.reflect.AnnotatedElement;
 
 /**
- * Defines where the annotation appears on the target object.
+ * Defines where the annotation appears on the input object.
  *
  * @author allurx
  * @see AnnotatedElement
@@ -26,22 +26,23 @@ import java.lang.reflect.AnnotatedElement;
 public enum Location {
 
     /**
-     * Directly present on the target.
+     * Directly present on the input.
      */
     DIRECTLY_PRESENT,
 
     /**
-     * Indirectly present on the target.
+     * Indirectly present on the input.
      */
     INDIRECTLY_PRESENT,
 
     /**
-     * Present on the target.
+     * Present on the input.
      */
     PRESENT,
 
     /**
-     * Associated with the target.
+     * Associated with the input.
      */
     ASSOCIATED
 }
+
