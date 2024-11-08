@@ -42,6 +42,7 @@ class CollectionTest {
      */
     @Test
     void test() {
+
         // Create a list of strings using IntStream.
         var list = IntStream.range(0, 10)
                 .mapToObj(value -> "123456")

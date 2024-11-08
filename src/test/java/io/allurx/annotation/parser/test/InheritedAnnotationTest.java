@@ -43,10 +43,15 @@ class InheritedAnnotationTest {
 
     @Test
     void test() {
+
+        // Create an instance of Sub
         var sub = new Sub();
+
+        // Parse the Sub object using AnnotationParser with an AnnotatedTypeToken.
         var parsed = AnnotationParser.parse(sub, new AnnotatedTypeToken<@Accumulator(1) Sub>() {
         });
 
+        // Verify that the sum of accumulator values is correct
         Assertions.assertEquals(3, parsed.i);
     }
 

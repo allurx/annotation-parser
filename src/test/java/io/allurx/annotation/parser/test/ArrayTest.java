@@ -38,6 +38,7 @@ class ArrayTest {
      */
     @Test
     void test() {
+
         // Create a test array of strings.
         var array = new String[]{"123456", "123456", "123456"};
 

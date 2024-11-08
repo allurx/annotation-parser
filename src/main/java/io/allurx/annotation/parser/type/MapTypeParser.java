@@ -40,15 +40,17 @@ public class MapTypeParser implements TypeParser<Map<Object, Object>, AnnotatedP
     @Override
     public Map<Object, Object> parse(Map<Object, Object> input, AnnotatedParameterizedType annotatedParameterizedType) {
         AnnotatedType[] annotatedActualTypeArguments = annotatedParameterizedType.getAnnotatedActualTypeArguments();
-        return input.entrySet().parallelStream().collect(Collectors.collectingAndThen(
-                Collectors.toMap(
-                        entry -> AnnotationParser.parse(entry.getKey(), annotatedActualTypeArguments[0]),
-                        entry -> AnnotationParser.parse(entry.getValue(), annotatedActualTypeArguments[1])),
-                erased -> {
-                    Map<Object, Object> map = InstanceCreators.find(Reflections.getClass(input)).create();
-                    map.putAll(erased);
-                    return map;
-                }));
+        return input.entrySet()
+                .parallelStream()
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toMap(
+                                entry -> AnnotationParser.parse(entry.getKey(), annotatedActualTypeArguments[0]),
+                                entry -> AnnotationParser.parse(entry.getValue(), annotatedActualTypeArguments[1])),
+                        parsed -> {
+                            Map<Object, Object> map = InstanceCreators.find(Reflections.getClass(input)).create();
+                            map.putAll(parsed);
+                            return map;
+                        }));
     }
 
     @Override

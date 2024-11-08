@@ -15,6 +15,8 @@
  */
 package io.allurx.annotation.parser.util;
 
+import io.allurx.kit.base.Conditional;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -50,13 +52,11 @@ public final class Reflections {
     public static List<Field> listFields(Class<?> inputClass, boolean inherited) {
         return Optional.ofNullable(inputClass)
                 .filter(clazz -> clazz != Object.class)
-                .map(clazz -> {
-                    List<Field> fields = Stream.of(clazz.getDeclaredFields()).collect(Collectors.toList());
-                    if (inherited) {
-                        fields.addAll(listFields(clazz.getSuperclass(), true));
-                    }
-                    return fields;
-                }).orElseGet(ArrayList::new);
+                .map(clazz -> Conditional.of(Stream.of(clazz.getDeclaredFields()).collect(Collectors.toList()))
+                        .when(inherited)
+                        .consume(fields -> fields.addAll(listFields(clazz.getSuperclass(), true)))
+                        .get())
+                .orElseGet(ArrayList::new);
     }
 
     /**
@@ -69,13 +69,10 @@ public final class Reflections {
      */
     public static Object getFieldValue(Object input, Field field) {
         try {
-            if (field.canAccess(input)) {
-                return field.get(input);
-            }
-            field.setAccessible(true);
+            if (!field.canAccess(input)) field.setAccessible(true);
             return field.get(input);
         } catch (Exception e) {
-            throw new ReflectionException(String.format("Failed to get value of field %s from %s.", field.getName(), input.getClass()), e);
+            throw new ReflectionException("Failed to get value of field %s from %s.".formatted(field.getName(), input.getClass()), e);
         }
     }
 
@@ -89,14 +86,10 @@ public final class Reflections {
      */
     public static void setFieldValue(Object input, Field field, Object newInput) {
         try {
-            if (field.canAccess(input)) {
-                field.set(input, newInput);
-                return;
-            }
-            field.setAccessible(true);
+            if (!field.canAccess(input)) field.setAccessible(true);
             field.set(input, newInput);
         } catch (Exception e) {
-            throw new ReflectionException(String.format("Failed to set value of field %s in %s.", field.getName(), input.getClass()), e);
+            throw new ReflectionException("Failed to set value of field %s in %s.".formatted(field.getName(), input.getClass()), e);
         }
     }
 
@@ -111,13 +104,10 @@ public final class Reflections {
      */
     public static Object invokeMethod(Object input, Method method, Object... args) {
         try {
-            if (method.canAccess(input)) {
-                return method.invoke(input, args);
-            }
-            method.setAccessible(true);
+            if (!method.canAccess(input)) method.setAccessible(true);
             return method.invoke(input, args);
         } catch (Exception e) {
-            throw new ReflectionException(String.format("Failed to invoke method %s.", method), e);
+            throw new ReflectionException("Failed to invoke method %s.".formatted(method), e);
         }
     }
 
@@ -127,13 +117,13 @@ public final class Reflections {
      * @param clazz          the {@code Class} object to search for a constructor
      * @param parameterTypes the parameter types of the constructor to find
      * @param <T>            the type of the object that the constructor represents
-     * @return the declared constructor that matches the specified parameter types, or null if not found
+     * @return the declared constructor that matches the specified parameter types
      */
-    public static <T> Constructor<T> getDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes) {
+    public static <T> Optional<Constructor<T>> getDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes) {
         try {
-            return clazz.getDeclaredConstructor(parameterTypes);
+            return Optional.of(clazz.getDeclaredConstructor(parameterTypes));
         } catch (NoSuchMethodException e) {
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -148,12 +138,10 @@ public final class Reflections {
      */
     public static <T> T newInstance(Constructor<T> constructor, Object... args) {
         try {
-            if (!constructor.canAccess(null)) {
-                constructor.setAccessible(true);
-            }
+            if (!constructor.canAccess(null)) constructor.setAccessible(true);
             return constructor.newInstance(args);
         } catch (Exception e) {
-            throw new ReflectionException(String.format("Failed to instantiate object using constructor %s with parameters %s", constructor, Arrays.toString(args)), e);
+            throw new ReflectionException("Failed to instantiate object using constructor %s with parameters %s".formatted(constructor, Arrays.toString(args)), e);
         }
     }
 

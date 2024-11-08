@@ -48,6 +48,7 @@ class RepeatableAnnotationTest {
     void test() {
 
         int i = 0;
+
         // Parse the integer with multiple @Accumulator annotations
         int parsed = AnnotationParser.parse(i, new AnnotatedTypeToken<@Accumulator(1) @Accumulator(2) @Accumulator(3) Integer>() {
         });

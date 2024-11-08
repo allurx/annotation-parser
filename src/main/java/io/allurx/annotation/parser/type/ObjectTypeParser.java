@@ -49,7 +49,7 @@ public class ObjectTypeParser implements TypeParser<Object, AnnotatedType> {
                 .filter(Objects::nonNull)
                 .map(parse -> parseAnnotation(input, annotatedType, parse))
                 .reduce(input, (o, parsedInfo) -> parsedInfo.annotations.stream()
-                                .reduce(input, parsedInfo.annotationHandler::handle, (v1, v2) -> null),
+                                .reduce(o, parsedInfo.annotationHandler::handle, (v1, v2) -> null),
                         (v1, v2) -> null);
     }
 

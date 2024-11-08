@@ -39,6 +39,7 @@ class CascadeTest {
      */
     @Test
     void test() {
+
         // Create a Boy object with a nested Girl object.
         var boy = new Boy("Boy", new Girl("Girl"));
 
