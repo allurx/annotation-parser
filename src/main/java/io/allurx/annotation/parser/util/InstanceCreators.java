@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,7 @@
  */
 package io.allurx.annotation.parser.util;
 
+import io.allurx.kit.base.Conditional;
 import io.allurx.kit.base.reflection.TypeConverter;
 
 import java.util.ArrayList;
@@ -70,13 +71,8 @@ public final class InstanceCreators {
      * @return the instance creator for the specified {@link Class}
      */
     public static <T> InstanceCreator<T> find(Class<T> clazz) {
-        return TypeConverter.uncheckedCast(INSTANCE_CREATORS.computeIfAbsent(clazz, c -> {
-            if (isSingleton(c)) {
-                return () -> SINGLETONS.computeIfAbsent(c, cc -> findInstanceCreator(cc).create());
-            } else {
-                return findInstanceCreator(c);
-            }
-        }));
+        return TypeConverter.uncheckedCast(INSTANCE_CREATORS.computeIfAbsent(clazz, c ->
+                isSingleton(c) ? () -> SINGLETONS.computeIfAbsent(c, cc -> findInstanceCreator(cc).create()) : findInstanceCreator(c)));
     }
 
     /**
@@ -127,10 +123,9 @@ public final class InstanceCreators {
      * @return the instance creator for the specified {@link Class}
      */
     private static <T> InstanceCreator<T> findInstanceCreator(Class<T> clazz) {
-        return Optional.ofNullable(createByNoArgsConstructor(clazz))
-                .or(() -> Optional.ofNullable(createByCollectionOrMapConstructor(clazz)))
-                .orElseThrow(() -> new UnableCreateInstanceException(String.format(
-                        "Unable to create an instance of %s. Please provide an InstanceCreator for this class.", clazz)));
+        return createByNoArgsConstructor(clazz)
+                .or(() -> createByCollectionOrMapConstructor(clazz))
+                .orElseThrow(() -> new UnableCreateInstanceException("Unable to create an instance of %s. Please provide an InstanceCreator for this class.".formatted(clazz)));
     }
 
     /**
@@ -140,9 +135,9 @@ public final class InstanceCreators {
      * @param <T>   the type of the object
      * @return the instance creator for the object
      */
-    private static <T> InstanceCreator<T> createByNoArgsConstructor(Class<T> clazz) {
-        return Optional.ofNullable(Reflections.getDeclaredConstructor(clazz))
-                .<InstanceCreator<T>>map(constructor -> () -> Reflections.newInstance(constructor)).orElse(null);
+    private static <T> Optional<InstanceCreator<T>> createByNoArgsConstructor(Class<T> clazz) {
+        return Reflections.getDeclaredConstructor(clazz)
+                .map(constructor -> () -> Reflections.newInstance(constructor));
     }
 
     /**
@@ -152,17 +147,17 @@ public final class InstanceCreators {
      * @param <T>   the type of the object
      * @return the instance creator for the object
      */
-    private static <T> InstanceCreator<T> createByCollectionOrMapConstructor(Class<T> clazz) {
-        if (Collection.class.isAssignableFrom(clazz)) {
-            return Optional.ofNullable(Reflections.getDeclaredConstructor(clazz, Collection.class))
-                    .<InstanceCreator<T>>map(constructor -> () -> Reflections.newInstance(constructor, EMPTY_LIST))
-                    .orElse(null);
-        } else if (Map.class.isAssignableFrom(clazz)) {
-            return Optional.ofNullable(Reflections.getDeclaredConstructor(clazz, Map.class))
-                    .<InstanceCreator<T>>map(constructor -> () -> Reflections.newInstance(constructor, EMPTY_MAP))
-                    .orElse(null);
-        }
-        return null;
+    private static <T> Optional<InstanceCreator<T>> createByCollectionOrMapConstructor(Class<T> clazz) {
+        return Conditional.of(clazz)
+                .when(Collection.class::isAssignableFrom)
+                .map(c -> Reflections.getDeclaredConstructor(c, Collection.class)
+                        .<InstanceCreator<T>>map(constructor -> () -> Reflections.newInstance(constructor, EMPTY_LIST)))
+                .elseIf(Map.class::isAssignableFrom)
+                .map(c -> Reflections.getDeclaredConstructor(c, Map.class)
+                        .<InstanceCreator<T>>map(constructor -> () -> Reflections.newInstance(constructor, EMPTY_MAP)))
+                .orElse()
+                .map(c -> Optional.<InstanceCreator<T>>empty())
+                .get();
     }
 
     /**

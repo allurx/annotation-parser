@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package io.allurx.annotation.parser.util;
+
+import io.allurx.kit.base.Conditional;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -30,13 +32,9 @@ import static io.allurx.kit.base.reflection.TypeConverter.uncheckedCast;
 
 /**
  * Utility class for reflection operations.
- * This class provides static methods to perform various reflection-related tasks
+ * This class provides static methods for performing various reflection-related tasks,
  * such as retrieving fields, accessing and modifying field values, invoking methods,
  * and working with constructors.
- * <p>
- * The class is final and has a private constructor to prevent instantiation.
- *
- * @author allurx
  */
 public final class Reflections {
 
@@ -46,82 +44,70 @@ public final class Reflections {
     /**
      * Retrieves the {@link Field} objects declared in the specified class.
      *
-     * @param targetClass the {@link Class} of the target object
-     * @param inherited   whether to include inherited {@link Field} objects from superclasses
+     * @param inputClass the {@link Class} of the input object
+     * @param inherited  whether to include inherited {@link Field} objects from superclasses
      * @return a list of {@link Field} objects declared in the specified class,
      * including inherited fields if specified
      */
-    public static List<Field> listFields(Class<?> targetClass, boolean inherited) {
-        return Optional.ofNullable(targetClass)
+    public static List<Field> listFields(Class<?> inputClass, boolean inherited) {
+        return Optional.ofNullable(inputClass)
                 .filter(clazz -> clazz != Object.class)
-                .map(clazz -> {
-                    List<Field> fields = Stream.of(clazz.getDeclaredFields()).collect(Collectors.toList());
-                    if (inherited) {
-                        fields.addAll(listFields(clazz.getSuperclass(), true));
-                    }
-                    return fields;
-                }).orElseGet(ArrayList::new);
+                .map(clazz -> Conditional.of(Stream.of(clazz.getDeclaredFields()).collect(Collectors.toList()))
+                        .when(inherited)
+                        .consume(fields -> fields.addAll(listFields(clazz.getSuperclass(), true)))
+                        .get())
+                .orElseGet(ArrayList::new);
     }
 
     /**
-     * Retrieves the value of a specific {@link Field} in the target object.
+     * Retrieves the value of a specific {@link Field} in the input object.
      *
-     * @param target the target object from which to retrieve the field value
-     * @param field  the {@link Field} object representing the field to access
+     * @param input the input object from which to retrieve the field value
+     * @param field the {@link Field} object representing the field to access
      * @return the value of the specified {@link Field}
      * @throws ReflectionException if accessing the field fails
      */
-    public static Object getFieldValue(Object target, Field field) {
+    public static Object getFieldValue(Object input, Field field) {
         try {
-            if (field.canAccess(target)) {
-                return field.get(target);
-            }
-            field.setAccessible(true);
-            return field.get(target);
+            if (!field.canAccess(input)) field.setAccessible(true);
+            return field.get(input);
         } catch (Exception e) {
-            throw new ReflectionException(String.format("Failed to get value of field %s from %s.", field.getName(), target.getClass()), e);
+            throw new ReflectionException("Failed to get value of field %s from %s.".formatted(field.getName(), input.getClass()), e);
         }
     }
 
     /**
-     * Sets the value of a specific field in the target object.
+     * Sets the value of a specific field in the input object.
      *
-     * @param target   the target object to modify
+     * @param input    the input object to modify
      * @param field    the {@link Field} object representing the field to modify
-     * @param newValue the new value to set for the field
+     * @param newInput the new value to set for the field
      * @throws ReflectionException if setting the field value fails
      */
-    public static void setFieldValue(Object target, Field field, Object newValue) {
+    public static void setFieldValue(Object input, Field field, Object newInput) {
         try {
-            if (field.canAccess(target)) {
-                field.set(target, newValue);
-                return;
-            }
-            field.setAccessible(true);
-            field.set(target, newValue);
+            if (!field.canAccess(input)) field.setAccessible(true);
+            field.set(input, newInput);
         } catch (Exception e) {
-            throw new ReflectionException(String.format("Failed to set value of field %s in %s.", field.getName(), target.getClass()), e);
+            throw new ReflectionException("Failed to set value of field %s in %s.".formatted(field.getName(), input.getClass()), e);
         }
     }
 
     /**
-     * Invokes a method on the target object.
+     * Invokes a method on the input object.
      *
-     * @param target the target object on which to invoke the method
+     * @param input  the input object on which to invoke the method
      * @param method the {@link Method} object representing the method to invoke
      * @param args   the arguments to pass to the method
      * @return the result of the method execution
      * @throws ReflectionException if method invocation fails
      */
-    public static Object invokeMethod(Object target, Method method, Object... args) {
+    public static Object invokeMethod(Object input, Method method, Object... args) {
         try {
-            if (method.canAccess(target)) {
-                return method.invoke(target, args);
-            }
-            method.setAccessible(true);
-            return method.invoke(target, args);
+            if (!method.canAccess(input)) method.setAccessible(true);
+            return method.invoke(input, args);
         } catch (Exception e) {
-            throw new ReflectionException(String.format("Failed to invoke method %s.", method), e);
+            throw new ReflectionException("Failed to invoke method %s.".formatted(method), e);
         }
     }
 
@@ -131,13 +117,13 @@ public final class Reflections {
      * @param clazz          the {@code Class} object to search for a constructor
      * @param parameterTypes the parameter types of the constructor to find
      * @param <T>            the type of the object that the constructor represents
-     * @return the declared constructor that matches the specified parameter types, or null if not found
+     * @return the declared constructor that matches the specified parameter types
      */
-    public static <T> Constructor<T> getDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes) {
+    public static <T> Optional<Constructor<T>> getDeclaredConstructor(Class<T> clazz, Class<?>... parameterTypes) {
         try {
-            return clazz.getDeclaredConstructor(parameterTypes);
+            return Optional.of(clazz.getDeclaredConstructor(parameterTypes));
         } catch (NoSuchMethodException e) {
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -152,12 +138,10 @@ public final class Reflections {
      */
     public static <T> T newInstance(Constructor<T> constructor, Object... args) {
         try {
-            if (!constructor.canAccess(null)) {
-                constructor.setAccessible(true);
-            }
+            if (!constructor.canAccess(null)) constructor.setAccessible(true);
             return constructor.newInstance(args);
         } catch (Exception e) {
-            throw new ReflectionException(String.format("Failed to instantiate object using constructor %s with parameters %s", constructor, Arrays.toString(args)), e);
+            throw new ReflectionException("Failed to instantiate object using constructor %s with parameters %s".formatted(constructor, Arrays.toString(args)), e);
         }
     }
 
@@ -174,13 +158,13 @@ public final class Reflections {
     }
 
     /**
-     * Retrieves the {@link Class} object of the specified value.
+     * Retrieves the {@link Class} object of the specified input.
      *
-     * @param value the object value
+     * @param input the input object
      * @param <T>   the type of the object
-     * @return the {@link Class} object representing the type of the specified value
+     * @return the {@link Class} object representing the type of the specified input
      */
-    public static <T> Class<T> getClass(T value) {
-        return uncheckedCast(value.getClass());
+    public static <T> Class<T> getClass(T input) {
+        return uncheckedCast(input.getClass());
     }
 }

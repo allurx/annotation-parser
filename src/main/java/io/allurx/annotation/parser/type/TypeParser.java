@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -57,22 +57,22 @@ public interface TypeParser<T, AT extends AnnotatedType> extends Sortable, Compa
 
     /**
      * Parses the object. Subclasses implementing this method should return a new {@link T} instance
-     * if they can parse the target object <b>whenever possible</b>.
+     * if they can parse the input <b>whenever possible</b>.
      *
-     * @param value         The object to be parsed
+     * @param input         The object to be parsed
      * @param annotatedType The {@link AnnotatedType} of the object to be parsed
      * @return The newly parsed object
      */
-    T parse(T value, AT annotatedType);
+    T parse(T input, AT annotatedType);
 
     /**
-     * Determines whether the parser supports parsing the target object.
+     * Determines whether the parser supports parsing the input object.
      *
-     * @param value         The object to be parsed
+     * @param input         The object to be parsed
      * @param annotatedType The {@link AnnotatedType} of the object to be parsed
-     * @return Whether the parser supports parsing the target object
+     * @return Whether the parser supports parsing the input object
      */
-    boolean support(Object value, AnnotatedType annotatedType);
+    boolean support(Object input, AnnotatedType annotatedType);
 
     /**
      * Execution order of the parser.

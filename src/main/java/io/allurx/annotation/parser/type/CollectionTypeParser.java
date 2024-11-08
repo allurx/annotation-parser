@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,15 +38,15 @@ public class CollectionTypeParser implements TypeParser<Collection<Object>, Anno
     }
 
     @Override
-    public Collection<Object> parse(Collection<Object> value, AnnotatedParameterizedType annotatedParameterizedType) {
-        return value.parallelStream()
+    public Collection<Object> parse(Collection<Object> input, AnnotatedParameterizedType annotatedParameterizedType) {
+        return input.parallelStream()
                 .map(o -> AnnotationParser.parse(o, annotatedParameterizedType.getAnnotatedActualTypeArguments()[0]))
-                .collect(Collectors.toCollection(() -> InstanceCreators.find(Reflections.getClass(value)).create()));
+                .collect(Collectors.toCollection(() -> InstanceCreators.find(Reflections.getClass(input)).create()));
     }
 
     @Override
-    public boolean support(Object value, AnnotatedType annotatedType) {
-        return value instanceof Collection && annotatedType instanceof AnnotatedParameterizedType;
+    public boolean support(Object input, AnnotatedType annotatedType) {
+        return input instanceof Collection && annotatedType instanceof AnnotatedParameterizedType;
     }
 
     @Override

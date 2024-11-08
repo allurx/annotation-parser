@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.allurx.annotation.parser.type;
 
 import io.allurx.annotation.parser.handler.AnnotationHandler;
@@ -30,8 +29,8 @@ import java.util.Optional;
 
 /**
  * Finds all annotations marked with {@link Parse} on the object and parses the object in the order these annotations appear.
+ * This parser iterates through each annotation on the input to handle parsing using specified handlers.
  *
- * @author allurx
  * @see Parse
  * @see AnnotationHandler
  */
@@ -44,19 +43,19 @@ public class ObjectTypeParser implements TypeParser<Object, AnnotatedType> {
     }
 
     @Override
-    public Object parse(Object value, AnnotatedType annotatedType) {
+    public Object parse(Object input, AnnotatedType annotatedType) {
         return Arrays.stream(annotatedType.getDeclaredAnnotations())
                 .map(annotation -> annotation.annotationType().getDeclaredAnnotation(Parse.class))
                 .filter(Objects::nonNull)
-                .map(parse -> parseAnnotation(value, annotatedType, parse))
-                .reduce(value, (o, parsedInfo) -> parsedInfo.annotations.stream()
-                                .reduce(value, parsedInfo.annotationHandler::handle, (v1, v2) -> null),
+                .map(parse -> parseAnnotation(input, annotatedType, parse))
+                .reduce(input, (o, parsedInfo) -> parsedInfo.annotations.stream()
+                                .reduce(o, parsedInfo.annotationHandler::handle, (v1, v2) -> null),
                         (v1, v2) -> null);
     }
 
     @Override
-    public boolean support(Object value, AnnotatedType annotatedType) {
-        return value != null;
+    public boolean support(Object input, AnnotatedType annotatedType) {
+        return input != null;
     }
 
     @Override
@@ -65,14 +64,14 @@ public class ObjectTypeParser implements TypeParser<Object, AnnotatedType> {
     }
 
     /**
-     * Parses all annotations on the target object that meet the specified conditions.
+     * Parses all annotations on the input that meet the specified conditions based on {@link Parse}.
      *
-     * @param value         The object to be parsed.
-     * @param annotatedType {@link AnnotatedType}
-     * @param parse         {@link Parse}
+     * @param input         The object to be parsed.
+     * @param annotatedType {@link AnnotatedType} representing the annotated type of the input.
+     * @param parse         {@link Parse} indicating how annotations should be handled.
      * @return {@link ParsedInfo} containing parsed annotations and their handler.
      */
-    private ParsedInfo parseAnnotation(Object value, AnnotatedType annotatedType, Parse parse) {
+    private ParsedInfo parseAnnotation(Object input, AnnotatedType annotatedType, Parse parse) {
         @SuppressWarnings("unchecked")
         var annotationHandler = (AnnotationHandler<Object, Annotation, Object>) InstanceCreators.find(parse.handler()).create();
         var set = new HashSet<Annotation>();
@@ -84,11 +83,11 @@ public class ObjectTypeParser implements TypeParser<Object, AnnotatedType> {
                         set.addAll(Arrays.asList(annotatedType.getDeclaredAnnotationsByType(parse.annotation())));
                 case PRESENT -> {
                     Optional.ofNullable(annotatedType.getAnnotation(parse.annotation())).ifPresent(set::add);
-                    Optional.ofNullable(value.getClass().getAnnotation(parse.annotation())).ifPresent(set::add);
+                    Optional.ofNullable(input.getClass().getAnnotation(parse.annotation())).ifPresent(set::add);
                 }
                 case ASSOCIATED -> {
                     set.addAll(Arrays.asList(annotatedType.getAnnotationsByType(parse.annotation())));
-                    set.addAll(Arrays.asList(value.getClass().getAnnotationsByType(parse.annotation())));
+                    set.addAll(Arrays.asList(input.getClass().getAnnotationsByType(parse.annotation())));
                 }
             }
         }
@@ -96,7 +95,7 @@ public class ObjectTypeParser implements TypeParser<Object, AnnotatedType> {
     }
 
     /**
-     * Information about parsed annotations.
+     * Information about parsed annotations, containing relevant annotations and their handler.
      *
      * @param annotations       All annotations that meet the parsing conditions.
      * @param annotationHandler The handler for the annotations.
@@ -105,3 +104,4 @@ public class ObjectTypeParser implements TypeParser<Object, AnnotatedType> {
                       AnnotationHandler<Object, Annotation, Object> annotationHandler) {
     }
 }
+

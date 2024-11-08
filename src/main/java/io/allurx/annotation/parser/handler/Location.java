@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@ package io.allurx.annotation.parser.handler;
 import java.lang.reflect.AnnotatedElement;
 
 /**
- * Defines where the annotation appears on the target object.
+ * Defines where the annotation appears on the input object.
  *
  * @author allurx
  * @see AnnotatedElement
@@ -26,22 +26,23 @@ import java.lang.reflect.AnnotatedElement;
 public enum Location {
 
     /**
-     * Directly present on the target.
+     * Directly present on the input.
      */
     DIRECTLY_PRESENT,
 
     /**
-     * Indirectly present on the target.
+     * Indirectly present on the input.
      */
     INDIRECTLY_PRESENT,
 
     /**
-     * Present on the target.
+     * Present on the input.
      */
     PRESENT,
 
     /**
-     * Associated with the target.
+     * Associated with the input.
      */
     ASSOCIATED
 }
+
