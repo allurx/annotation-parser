@@ -84,9 +84,9 @@ void parse() {
 
 The `annotation-parser` library is built on the `AnnotatedType` type system introduced in JDK 1.8 and utilizes the Chain of Responsibility design pattern to parse custom annotations in arbitrary data structures. A thorough understanding of Java's `Type` and `AnnotatedType` systems is essential for grasping the underlying implementation principles. For deeper insights, consider reading the following articles:
 
-- [Java Type](https://www.zyc.red/Java/Reflection/Type)
-- [Java AnnotatedType](https://www.zyc.red/Java/Reflection/AnnotatedType)
-- [Java AnnotatedElement](https://www.zyc.red/Java/Reflection/AnnotatedElement)
+- [Java Type](https://www.allurx.io/Java/Reflection/Type)
+- [Java AnnotatedType](https://www.allurx.io/Java/Reflection/AnnotatedType)
+- [Java AnnotatedElement](https://www.allurx.io/Java/Reflection/AnnotatedElement)
 
 ## License
 
