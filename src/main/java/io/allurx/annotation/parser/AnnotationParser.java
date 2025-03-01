@@ -44,6 +44,8 @@ import java.util.concurrent.ThreadLocalRandom;
  *     <li>{@link AnnotationParser#randomOrder Generates a random order value that does not conflict with registered type parsers' order}</li>
  *     <li>{@link AnnotationParser#typeParsers Retrieves all currently registered type parsers}</li>
  * </ol>
+ *
+ * @author allurx
  */
 public final class AnnotationParser {
 

@@ -26,6 +26,7 @@ import io.allurx.annotation.parser.test.annotation.EraseString;
  * <p>When invoked, the {@link #handle(String, EraseString)} method
  * replaces the original input with asterisks ("******").</p>
  *
+ * @author allurx
  * @see AnnotationHandler
  * @see EraseString
  */

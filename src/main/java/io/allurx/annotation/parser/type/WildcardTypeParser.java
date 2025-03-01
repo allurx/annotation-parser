@@ -31,6 +31,7 @@ import java.util.stream.Stream;
  * based on annotations defined on these bounds.
  * </p>
  *
+ * @author allurx
  * @see WildcardType
  */
 public class WildcardTypeParser implements TypeParser<Object, AnnotatedWildcardType> {
