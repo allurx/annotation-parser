@@ -31,6 +31,7 @@ import java.util.Optional;
  * Finds all annotations marked with {@link Parse} on the object and parses the object in the order these annotations appear.
  * This parser iterates through each annotation on the input to handle parsing using specified handlers.
  *
+ * @author allurx
  * @see Parse
  * @see AnnotationHandler
  */

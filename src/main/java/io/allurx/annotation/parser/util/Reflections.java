@@ -35,6 +35,8 @@ import static io.allurx.kit.base.reflection.TypeConverter.uncheckedCast;
  * This class provides static methods for performing various reflection-related tasks,
  * such as retrieving fields, accessing and modifying field values, invoking methods,
  * and working with constructors.
+ *
+ * @author allurx
  */
 public final class Reflections {
 

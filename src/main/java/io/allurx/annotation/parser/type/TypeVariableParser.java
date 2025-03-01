@@ -30,6 +30,7 @@ import java.util.Arrays;
  * defined on those bounds.
  * </p>
  *
+ * @author allurx
  * @see TypeVariable
  */
 public class TypeVariableParser implements TypeParser<Object, AnnotatedTypeVariable> {
