@@ -16,7 +16,6 @@
 package io.allurx.annotation.parser.util;
 
 import io.allurx.kit.base.Conditional;
-import io.allurx.kit.base.reflection.TypeConverter;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;

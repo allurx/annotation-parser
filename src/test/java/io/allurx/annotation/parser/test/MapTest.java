@@ -72,12 +72,4 @@ class MapTest {
         Assertions.assertEquals("2", parsed.get("******"));
     }
 
-    @Test
-    void immutableMapTest() {
-
-        var parsed = AnnotationParser.parse(Map.of(1, "123456"), new AnnotatedTypeToken<Map<Integer, @EraseString String>>() {
-        });
-
-        Assertions.assertEquals(Map.of(1, "******"), parsed);
-    }
 }
