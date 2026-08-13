@@ -61,13 +61,21 @@ public class CascadeTypeParser implements TypeParser<Object, AnnotatedType> {
                 .map(clazz -> input)
                 .orElse()
                 .map(clazz -> {
-                    Object parsed = InstanceCreators.find(clazz).create();
-                    Reflections.listFields(clazz, annotatedType.getDeclaredAnnotation(Cascade.class).inherited())
+                    var parsed = InstanceCreators.find(clazz).create();
+                    var cascade = annotatedType.getDeclaredAnnotation(Cascade.class);
+                    Reflections.listFields(clazz, true)
                             .stream()
-                            .filter(CascadeTypeParser::isParsableField)
+                            .filter(CascadeTypeParser::isCopyableField)
                             .forEach(field -> {
                                 var fieldValue = Reflections.getFieldValue(input, field);
-                                Reflections.setFieldValue(parsed, field, AnnotationParser.parse(fieldValue, field.getAnnotatedType()));
+                                var shouldParse = isParsableField(field)
+                                        && (cascade.inherited() || field.getDeclaringClass() == clazz);
+                                Reflections.setFieldValue(
+                                        parsed,
+                                        field,
+                                        shouldParse
+                                                ? AnnotationParser.parse(fieldValue, field.getAnnotatedType())
+                                                : fieldValue);
                             });
                     return parsed;
                 })
@@ -84,11 +92,14 @@ public class CascadeTypeParser implements TypeParser<Object, AnnotatedType> {
         return LOWEST_PRIORITY;
     }
 
+    private static boolean isCopyableField(Field field) {
+        return !field.isSynthetic()
+                && !Modifier.isStatic(field.getModifiers());
+    }
+
     private static boolean isParsableField(Field field) {
         int modifiers = field.getModifiers();
-        return !field.isSynthetic()
-                && !Modifier.isStatic(modifiers)
-                && !Modifier.isFinal(modifiers)
+        return !Modifier.isFinal(modifiers)
                 && !Modifier.isTransient(modifiers);
     }
 }
