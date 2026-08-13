@@ -39,7 +39,7 @@ public class CollectionTypeParser implements TypeParser<Collection<Object>, Anno
 
     @Override
     public Collection<Object> parse(Collection<Object> input, AnnotatedParameterizedType annotatedParameterizedType) {
-        return input.parallelStream()
+        return input.stream()
                 .map(o -> AnnotationParser.parse(o, annotatedParameterizedType.getAnnotatedActualTypeArguments()[0]))
                 .collect(Collectors.toCollection(() -> InstanceCreators.find(Reflections.getClass(input)).create()));
     }

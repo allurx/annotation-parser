@@ -52,6 +52,19 @@ class CascadeTest {
         Assertions.assertEquals("******", parsed.girl.name);
     }
 
+    @Test
+    void ignoredFields() {
+
+        var parsed = AnnotationParser.parse(new FieldHolder("123456"), new AnnotatedTypeToken<@Cascade FieldHolder>() {
+        });
+
+        Assertions.assertEquals("******", parsed.value);
+        Assertions.assertEquals("123456", FieldHolder.staticValue);
+        Assertions.assertEquals("123456", parsed.finalValue);
+        Assertions.assertEquals("123456", parsed.transientValue);
+        Assertions.assertEquals("123456", FieldHolder.STATIC_FINAL_VALUE);
+    }
+
     /**
      * A record representing a Boy with a name and a nested Girl.
      *
@@ -67,5 +80,26 @@ class CascadeTest {
      * @param name The name of the girl, annotated with {@link EraseString}.
      */
     record Girl(@EraseString String name) {
+    }
+
+    static class FieldHolder {
+
+        static @EraseString String staticValue = "123456";
+
+        static final @EraseString String STATIC_FINAL_VALUE = "123456";
+
+        final @EraseString String finalValue = "123456";
+
+        transient @EraseString String transientValue = "123456";
+
+        @EraseString
+        String value;
+
+        FieldHolder() {
+        }
+
+        FieldHolder(String value) {
+            this.value = value;
+        }
     }
 }

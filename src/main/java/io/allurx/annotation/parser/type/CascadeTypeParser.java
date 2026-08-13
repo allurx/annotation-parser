@@ -60,15 +60,17 @@ public class CascadeTypeParser implements TypeParser<Object, AnnotatedType> {
                 .elseIf(Class::isEnum)
                 .map(clazz -> input)
                 .orElse()
-                .map(clazz -> Reflections.listFields(clazz, annotatedType.getDeclaredAnnotation(Cascade.class).inherited())
-                        .parallelStream()
-                        .filter(field -> !(Modifier.isFinal(field.getModifiers()) && Modifier.isStatic(field.getModifiers())))
-                        .reduce(InstanceCreators.find(clazz).create(),
-                                (o, field) -> {
-                                    var fieldValue = Reflections.getFieldValue(input, field);
-                                    Reflections.setFieldValue(o, field, AnnotationParser.parse(fieldValue, field.getAnnotatedType()));
-                                    return o;
-                                }, (o1, o2) -> o1))
+                .map(clazz -> {
+                    Object parsed = InstanceCreators.find(clazz).create();
+                    Reflections.listFields(clazz, annotatedType.getDeclaredAnnotation(Cascade.class).inherited())
+                            .stream()
+                            .filter(CascadeTypeParser::isParsableField)
+                            .forEach(field -> {
+                                var fieldValue = Reflections.getFieldValue(input, field);
+                                Reflections.setFieldValue(parsed, field, AnnotationParser.parse(fieldValue, field.getAnnotatedType()));
+                            });
+                    return parsed;
+                })
                 .get();
     }
 
@@ -80,5 +82,13 @@ public class CascadeTypeParser implements TypeParser<Object, AnnotatedType> {
     @Override
     public int order() {
         return LOWEST_PRIORITY;
+    }
+
+    private static boolean isParsableField(Field field) {
+        int modifiers = field.getModifiers();
+        return !field.isSynthetic()
+                && !Modifier.isStatic(modifiers)
+                && !Modifier.isFinal(modifiers)
+                && !Modifier.isTransient(modifiers);
     }
 }

@@ -4,7 +4,7 @@
 
 ## JDK Version
 
-**JDK 21**
+**JDK 25**
 
 ## Maven Dependency
 

@@ -55,4 +55,13 @@ class CollectionTest {
         // Verify that each parsed string is masked.
         parsed.forEach(s -> Assertions.assertEquals("******", s));
     }
+
+    @Test
+    void immutableListTest() {
+
+        var parsed = AnnotationParser.parse(List.of("123456"), new AnnotatedTypeToken<List<@EraseString String>>() {
+        });
+
+        Assertions.assertEquals(List.of("******"), parsed);
+    }
 }
