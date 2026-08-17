@@ -113,8 +113,6 @@ public final class InstanceCreators {
      *     <li>If the type is a {@link Collection} or {@link Map}, attempt to find a constructor that takes a
      *     {@link Collection} or {@link Map} as a parameter, respectively, in accordance with the definitions of
      *     {@link Collection} and {@link Map}.</li>
-     *     <li>If the type is a known {@link Collection} or {@link Map} abstraction or wrapper, fall back to a
-     *     standard mutable implementation.</li>
      * </ol>
      *
      * @param clazz the specified {@link Class}

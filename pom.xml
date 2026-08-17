@@ -10,7 +10,7 @@
     <description>Java Annotation Parser</description>
 
     <properties>
-        <junit-jupiter.version>5.11.0</junit-jupiter.version>
+        <junit-jupiter.version>6.1.3</junit-jupiter.version>
         <kit-base.version>2.3.1</kit-base.version>
         <maven.compiler.source.version>25</maven.compiler.source.version>
         <maven.compiler.target.version>25</maven.compiler.target.version>
@@ -20,7 +20,7 @@
         <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
         <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
-        <maven-central-publishing-plugin.version>0.10.0</maven-central-publishing-plugin.version>
+        <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -64,19 +64,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>Nexus Snapshots Repository</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </snapshotRepository>
-        <repository>
-            <id>sonatype-nexus-staging</id>
-            <name>Nexus Release Repository</name>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
 
     <build>
         <plugins>

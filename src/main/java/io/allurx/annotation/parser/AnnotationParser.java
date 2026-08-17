@@ -29,7 +29,6 @@ import io.allurx.kit.base.reflection.AnnotatedTypeToken;
 import java.lang.reflect.AnnotatedType;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -94,7 +93,7 @@ public final class AnnotationParser {
      */
     @SuppressWarnings("unchecked")
     public static <T, AT extends AnnotatedType> T parse(T input, AT annotatedType) {
-        return List.copyOf(TYPE_PARSERS).stream()
+        return TYPE_PARSERS.stream()
                 .filter(tp -> tp.support(input, annotatedType))
                 .reduce(input, (v, tp) -> ((TypeParser<T, AT>) tp).parse(v, annotatedType), (v1, v2) -> null);
     }
