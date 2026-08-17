@@ -17,24 +17,13 @@ package io.allurx.annotation.parser.util;
 
 import io.allurx.kit.base.Conditional;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.NavigableMap;
-import java.util.NavigableSet;
 import java.util.Optional;
-import java.util.Queue;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static io.allurx.kit.base.reflection.TypeConverter.uncheckedCast;
@@ -139,7 +128,6 @@ public final class InstanceCreators {
     private static <T> InstanceCreator<T> findInstanceCreator(Class<T> clazz) {
         return createByNoArgsConstructor(clazz)
                 .or(() -> createByCollectionOrMapConstructor(clazz))
-                .or(() -> createByKnownCollectionOrMapType(clazz))
                 .orElseThrow(() -> new UnableCreateInstanceException("Unable to create an instance of %s. Please provide an InstanceCreator for this class.".formatted(clazz)));
     }
 
@@ -173,34 +161,6 @@ public final class InstanceCreators {
                 .orElse()
                 .map(c -> Optional.<InstanceCreator<T>>empty())
                 .get();
-    }
-
-    /**
-     * Creates an instance creator for common collection and map abstractions when their concrete runtime type cannot
-     * be directly instantiated, such as immutable JDK collection wrappers.
-     *
-     * @param clazz the specified {@link Class}
-     * @param <T>   the type of the specified {@link Class}
-     * @return the instance creator for a compatible mutable implementation
-     */
-    private static <T> Optional<InstanceCreator<T>> createByKnownCollectionOrMapType(Class<T> clazz) {
-        return Conditional.of(clazz)
-                .when(Map.class::isAssignableFrom)
-                .map(c -> Optional.<InstanceCreator<T>>of(() -> uncheckedCast(new LinkedHashMap<>())))
-                .elseIf(Set.class::isAssignableFrom)
-                .map(c -> Optional.<InstanceCreator<T>>of(() -> uncheckedCast(new LinkedHashSet<>())))
-                .elseIf(c -> List.class.isAssignableFrom(c) || Collection.class.isAssignableFrom(c))
-                .map(c -> Optional.<InstanceCreator<T>>of(() -> uncheckedCast(new ArrayList<>())))
-                .elseIf(Queue.class::isAssignableFrom)
-                .map(c -> Optional.<InstanceCreator<T>>of(() -> uncheckedCast(new ArrayDeque<>())))
-                .elseIf(c -> NavigableSet.class.isAssignableFrom(c) || SortedSet.class.isAssignableFrom(c))
-                .map(c -> Optional.<InstanceCreator<T>>of(() -> uncheckedCast(new TreeSet<>())))
-                .elseIf(c -> NavigableMap.class.isAssignableFrom(c) || SortedMap.class.isAssignableFrom(c))
-                .map(c -> Optional.<InstanceCreator<T>>of(() -> uncheckedCast(new TreeMap<>())))
-                .orElse()
-                .map(c -> Optional.<InstanceCreator<T>>empty())
-                .get()
-                ;
     }
 
     /**
