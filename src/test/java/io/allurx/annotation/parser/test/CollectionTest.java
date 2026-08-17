@@ -55,4 +55,5 @@ class CollectionTest {
         // Verify that each parsed string is masked.
         parsed.forEach(s -> Assertions.assertEquals("******", s));
     }
+
 }

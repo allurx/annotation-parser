@@ -145,4 +145,5 @@ public final class AnnotationParser {
     public static SortedSet<TypeParser<?, ? extends AnnotatedType>> typeParsers() {
         return TYPE_PARSERS;
     }
+
 }

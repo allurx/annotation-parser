@@ -21,6 +21,7 @@ import io.allurx.kit.base.reflection.AnnotatedTypeToken;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -56,4 +57,19 @@ class MapTest {
         // Verify that all values in the parsed map are replaced with "******"
         parsed.forEach((k, v) -> Assertions.assertEquals("******", v));
     }
+
+    @Test
+    void duplicateParsedKeysUseLastValue() {
+
+        var map = new LinkedHashMap<String, String>();
+        map.put("first", "1");
+        map.put("second", "2");
+
+        var parsed = AnnotationParser.parse(map, new AnnotatedTypeToken<Map<@EraseString String, String>>() {
+        });
+
+        Assertions.assertEquals(1, parsed.size());
+        Assertions.assertEquals("2", parsed.get("******"));
+    }
+
 }

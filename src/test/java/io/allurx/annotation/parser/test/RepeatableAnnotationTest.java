@@ -57,6 +57,17 @@ class RepeatableAnnotationTest {
         Assertions.assertEquals(6, parsed);
     }
 
+    @Test
+    void duplicateRepeatableAnnotationsAreAllHandled() {
+
+        int i = 0;
+
+        int parsed = AnnotationParser.parse(i, new AnnotatedTypeToken<@Accumulator(1) @Accumulator(1) Integer>() {
+        });
+
+        Assertions.assertEquals(2, parsed);
+    }
+
     /**
      * Annotation to accumulate integer values.
      * Can be used multiple times due to {@link Repeatable}.

@@ -52,6 +52,45 @@ class CascadeTest {
         Assertions.assertEquals("******", parsed.girl.name);
     }
 
+    @Test
+    void ignoredFields() {
+
+        var input = new FieldHolder("123456", "source-final", "source-transient");
+        var parsed = AnnotationParser.parse(input, new AnnotatedTypeToken<@Cascade FieldHolder>() {
+        });
+
+        Assertions.assertNotSame(input, parsed);
+        Assertions.assertEquals("******", parsed.value);
+        Assertions.assertEquals("123456", FieldHolder.staticValue);
+        Assertions.assertEquals("source-final", parsed.finalValue);
+        Assertions.assertEquals("source-transient", parsed.transientValue);
+        Assertions.assertEquals("123456", FieldHolder.STATIC_FINAL_VALUE);
+    }
+
+    @Test
+    void copiesInheritedFieldsWithoutParsingThemByDefault() {
+
+        var input = new Child("source-parent", "source-child");
+        var parsed = AnnotationParser.parse(input, new AnnotatedTypeToken<@Cascade Child>() {
+        });
+
+        Assertions.assertNotSame(input, parsed);
+        Assertions.assertEquals("source-parent", parsed.parentValue);
+        Assertions.assertEquals("******", parsed.childValue);
+    }
+
+    @Test
+    void parsesInheritedFieldsWhenEnabled() {
+
+        var input = new Child("source-parent", "source-child");
+        var parsed = AnnotationParser.parse(input, new AnnotatedTypeToken<@Cascade(inherited = true) Child>() {
+        });
+
+        Assertions.assertNotSame(input, parsed);
+        Assertions.assertEquals("******", parsed.parentValue);
+        Assertions.assertEquals("******", parsed.childValue);
+    }
+
     /**
      * A record representing a Boy with a name and a nested Girl.
      *
@@ -67,5 +106,58 @@ class CascadeTest {
      * @param name The name of the girl, annotated with {@link EraseString}.
      */
     record Girl(@EraseString String name) {
+    }
+
+    static class FieldHolder {
+
+        static @EraseString String staticValue = "123456";
+
+        static final @EraseString String STATIC_FINAL_VALUE = "123456";
+
+        final @EraseString String finalValue;
+
+        transient @EraseString String transientValue;
+
+        @EraseString
+        String value;
+
+        FieldHolder() {
+            this("default-value", "default-final", "default-transient");
+        }
+
+        FieldHolder(String value, String finalValue, String transientValue) {
+            this.value = value;
+            this.finalValue = finalValue;
+            this.transientValue = transientValue;
+        }
+    }
+
+    static class Parent {
+
+        @EraseString
+        String parentValue;
+
+        Parent() {
+            this("default-parent");
+        }
+
+        Parent(String parentValue) {
+            this.parentValue = parentValue;
+        }
+    }
+
+    static class Child extends Parent {
+
+        @EraseString
+        String childValue;
+
+        Child() {
+            this("default-parent", "default-child");
+        }
+
+        Child(String parentValue, String childValue) {
+            super(parentValue);
+            this.childValue = childValue;
+        }
     }
 }

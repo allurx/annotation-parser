@@ -16,7 +16,7 @@
 package io.allurx.annotation.parser.type;
 
 import io.allurx.annotation.parser.AnnotationParser;
-import io.allurx.annotation.parser.util.InstanceCreators;
+import io.allurx.annotation.parser.util.Instances;
 import io.allurx.annotation.parser.util.Reflections;
 import io.allurx.kit.base.Conditional;
 
@@ -60,15 +60,25 @@ public class CascadeTypeParser implements TypeParser<Object, AnnotatedType> {
                 .elseIf(Class::isEnum)
                 .map(clazz -> input)
                 .orElse()
-                .map(clazz -> Reflections.listFields(clazz, annotatedType.getDeclaredAnnotation(Cascade.class).inherited())
-                        .parallelStream()
-                        .filter(field -> !(Modifier.isFinal(field.getModifiers()) && Modifier.isStatic(field.getModifiers())))
-                        .reduce(InstanceCreators.find(clazz).create(),
-                                (o, field) -> {
-                                    var fieldValue = Reflections.getFieldValue(input, field);
-                                    Reflections.setFieldValue(o, field, AnnotationParser.parse(fieldValue, field.getAnnotatedType()));
-                                    return o;
-                                }, (o1, o2) -> o1))
+                .map(clazz -> {
+                    var parsed = Instances.create(clazz);
+                    var cascade = annotatedType.getDeclaredAnnotation(Cascade.class);
+                    Reflections.listFields(clazz, true)
+                            .stream()
+                            .filter(CascadeTypeParser::isCopyableField)
+                            .forEach(field -> {
+                                var fieldValue = Reflections.getFieldValue(input, field);
+                                var shouldParse = isParsableField(field)
+                                        && (cascade.inherited() || field.getDeclaringClass() == clazz);
+                                Reflections.setFieldValue(
+                                        parsed,
+                                        field,
+                                        shouldParse
+                                                ? AnnotationParser.parse(fieldValue, field.getAnnotatedType())
+                                                : fieldValue);
+                            });
+                    return parsed;
+                })
                 .get();
     }
 
@@ -80,5 +90,16 @@ public class CascadeTypeParser implements TypeParser<Object, AnnotatedType> {
     @Override
     public int order() {
         return LOWEST_PRIORITY;
+    }
+
+    private static boolean isCopyableField(Field field) {
+        return !field.isSynthetic()
+                && !Modifier.isStatic(field.getModifiers());
+    }
+
+    private static boolean isParsableField(Field field) {
+        int modifiers = field.getModifiers();
+        return !Modifier.isFinal(modifiers)
+                && !Modifier.isTransient(modifiers);
     }
 }

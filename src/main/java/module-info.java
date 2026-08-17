@@ -19,7 +19,7 @@
  * @author allurx
  */
 module io.allurx.annotation.parser {
-    requires io.allurx.kit.base;
+    requires transitive io.allurx.kit.base;
     exports io.allurx.annotation.parser;
     exports io.allurx.annotation.parser.handler;
     exports io.allurx.annotation.parser.type;

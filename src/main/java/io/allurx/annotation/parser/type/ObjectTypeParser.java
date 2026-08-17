@@ -18,12 +18,13 @@ package io.allurx.annotation.parser.type;
 import io.allurx.annotation.parser.handler.AnnotationHandler;
 import io.allurx.annotation.parser.handler.Location;
 import io.allurx.annotation.parser.handler.Parse;
-import io.allurx.annotation.parser.util.InstanceCreators;
+import io.allurx.annotation.parser.util.Instances;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -74,25 +75,25 @@ public class ObjectTypeParser implements TypeParser<Object, AnnotatedType> {
      */
     private ParsedInfo parseAnnotation(Object input, AnnotatedType annotatedType, Parse parse) {
         @SuppressWarnings("unchecked")
-        var annotationHandler = (AnnotationHandler<Object, Annotation, Object>) InstanceCreators.find(parse.handler()).create();
-        var set = new HashSet<Annotation>();
+        var annotationHandler = (AnnotationHandler<Object, Annotation, Object>) Instances.create(parse.handler());
+        var annotations = new ArrayList<Annotation>();
         for (Location location : parse.location()) {
             switch (location) {
                 case DIRECTLY_PRESENT ->
-                        Optional.ofNullable(annotatedType.getDeclaredAnnotation(parse.annotation())).ifPresent(set::add);
+                        Optional.ofNullable(annotatedType.getDeclaredAnnotation(parse.annotation())).ifPresent(annotations::add);
                 case INDIRECTLY_PRESENT ->
-                        set.addAll(Arrays.asList(annotatedType.getDeclaredAnnotationsByType(parse.annotation())));
+                        annotations.addAll(Arrays.asList(annotatedType.getDeclaredAnnotationsByType(parse.annotation())));
                 case PRESENT -> {
-                    Optional.ofNullable(annotatedType.getAnnotation(parse.annotation())).ifPresent(set::add);
-                    Optional.ofNullable(input.getClass().getAnnotation(parse.annotation())).ifPresent(set::add);
+                    Optional.ofNullable(annotatedType.getAnnotation(parse.annotation())).ifPresent(annotations::add);
+                    Optional.ofNullable(input.getClass().getAnnotation(parse.annotation())).ifPresent(annotations::add);
                 }
                 case ASSOCIATED -> {
-                    set.addAll(Arrays.asList(annotatedType.getAnnotationsByType(parse.annotation())));
-                    set.addAll(Arrays.asList(input.getClass().getAnnotationsByType(parse.annotation())));
+                    annotations.addAll(Arrays.asList(annotatedType.getAnnotationsByType(parse.annotation())));
+                    annotations.addAll(Arrays.asList(input.getClass().getAnnotationsByType(parse.annotation())));
                 }
             }
         }
-        return new ParsedInfo(set, annotationHandler);
+        return new ParsedInfo(annotations, annotationHandler);
     }
 
     /**
@@ -101,7 +102,7 @@ public class ObjectTypeParser implements TypeParser<Object, AnnotatedType> {
      * @param annotations       All annotations that meet the parsing conditions.
      * @param annotationHandler The handler for the annotations.
      */
-    record ParsedInfo(HashSet<Annotation> annotations,
+    record ParsedInfo(List<Annotation> annotations,
                       AnnotationHandler<Object, Annotation, Object> annotationHandler) {
     }
 }
