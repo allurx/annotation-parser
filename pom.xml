@@ -4,7 +4,7 @@
 
     <groupId>io.allurx</groupId>
     <artifactId>annotation-parser</artifactId>
-    <version>2.1.2</version>
+    <version>3.0.0</version>
     <name>annotation-parser</name>
     <url>https://github.com/allurx/annotation-parser</url>
     <description>Java Annotation Parser</description>
@@ -12,8 +12,7 @@
     <properties>
         <junit-jupiter.version>6.1.3</junit-jupiter.version>
         <kit-base.version>2.3.1</kit-base.version>
-        <maven.compiler.source.version>25</maven.compiler.source.version>
-        <maven.compiler.target.version>25</maven.compiler.target.version>
+        <maven.compiler.release>25</maven.compiler.release>
         <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
         <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
@@ -71,10 +70,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
-                <configuration>
-                    <source>${maven.compiler.source.version}</source>
-                    <target>${maven.compiler.target.version}</target>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -109,9 +104,6 @@
                                 </goals>
                             </execution>
                         </executions>
-                        <configuration>
-                            <attach>true</attach>
-                        </configuration>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
