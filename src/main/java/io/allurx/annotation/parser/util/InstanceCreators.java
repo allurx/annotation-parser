@@ -18,7 +18,6 @@ package io.allurx.annotation.parser.util;
 import io.allurx.kit.base.Conditional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -51,29 +50,26 @@ import static io.allurx.kit.base.reflection.TypeConverter.uncheckedCast;
  *
  * @author allurx
  * @see InstanceCreator
- * @see Singleton
+ * @see Instances
  */
 public final class InstanceCreators {
 
     private static final Map<?, ?> EMPTY_MAP = new HashMap<>();
     private static final List<?> EMPTY_LIST = new ArrayList<>();
     private static final Map<Class<?>, InstanceCreator<?>> INSTANCE_CREATORS = new ConcurrentHashMap<>();
-    private static final Map<Class<?>, Object> SINGLETONS = new ConcurrentHashMap<>();
-    private static final Map<Class<?>, Boolean> SINGLETON_MARK = new ConcurrentHashMap<>();
 
     private InstanceCreators() {
     }
 
     /**
-     * Retrieves the instance creator for the specified {@link Class}.
+     * Retrieves the raw instance creator for the specified {@link Class}.
      *
      * @param clazz the specified {@link Class}
      * @param <T>   the type of the specified {@link Class}
      * @return the instance creator for the specified {@link Class}
      */
     public static <T> InstanceCreator<T> find(Class<T> clazz) {
-        return uncheckedCast(INSTANCE_CREATORS.computeIfAbsent(clazz, c ->
-                isSingleton(c) ? () -> SINGLETONS.computeIfAbsent(c, cc -> findInstanceCreator(cc).create()) : findInstanceCreator(c)));
+        return uncheckedCast(INSTANCE_CREATORS.computeIfAbsent(clazz, InstanceCreators::findInstanceCreator));
     }
 
     /**
@@ -163,24 +159,4 @@ public final class InstanceCreators {
                 .get();
     }
 
-    /**
-     * Determines if the specified {@link Class} is a singleton.
-     *
-     * @param clazz the specified {@link Class}
-     * @return true if it is a singleton, false otherwise
-     * @see Singleton
-     */
-    private static boolean isSingleton(Class<?> clazz) {
-        return Optional.ofNullable(SINGLETON_MARK.get(clazz)).orElseGet(() -> singleton(clazz));
-    }
-
-    private static boolean singleton(Class<?> clazz) {
-        Class<?>[] interfaces;
-        boolean v = clazz != null && clazz != Object.class &&
-                ((clazz.isInterface() ? clazz.getDeclaredAnnotation(Singleton.class) != null : clazz.isAnnotationPresent(Singleton.class)) ||
-                        ((interfaces = clazz.getInterfaces()).length > 0 && Arrays.stream(interfaces).anyMatch(InstanceCreators::singleton)) ||
-                        singleton(clazz.getSuperclass()));
-        Optional.ofNullable(clazz).ifPresent(c -> SINGLETON_MARK.putIfAbsent(c, v));
-        return v;
-    }
 }

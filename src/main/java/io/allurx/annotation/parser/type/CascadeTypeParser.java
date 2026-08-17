@@ -16,7 +16,7 @@
 package io.allurx.annotation.parser.type;
 
 import io.allurx.annotation.parser.AnnotationParser;
-import io.allurx.annotation.parser.util.InstanceCreators;
+import io.allurx.annotation.parser.util.Instances;
 import io.allurx.annotation.parser.util.Reflections;
 import io.allurx.kit.base.Conditional;
 
@@ -61,7 +61,7 @@ public class CascadeTypeParser implements TypeParser<Object, AnnotatedType> {
                 .map(clazz -> input)
                 .orElse()
                 .map(clazz -> {
-                    var parsed = InstanceCreators.find(clazz).create();
+                    var parsed = Instances.create(clazz);
                     var cascade = annotatedType.getDeclaredAnnotation(Cascade.class);
                     Reflections.listFields(clazz, true)
                             .stream()

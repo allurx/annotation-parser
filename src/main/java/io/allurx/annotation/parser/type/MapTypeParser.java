@@ -16,7 +16,7 @@
 package io.allurx.annotation.parser.type;
 
 import io.allurx.annotation.parser.AnnotationParser;
-import io.allurx.annotation.parser.util.InstanceCreators;
+import io.allurx.annotation.parser.util.Instances;
 import io.allurx.annotation.parser.util.Reflections;
 
 import java.lang.reflect.AnnotatedParameterizedType;
@@ -39,7 +39,7 @@ public class MapTypeParser implements TypeParser<Map<Object, Object>, AnnotatedP
     @Override
     public Map<Object, Object> parse(Map<Object, Object> input, AnnotatedParameterizedType annotatedParameterizedType) {
         AnnotatedType[] annotatedActualTypeArguments = annotatedParameterizedType.getAnnotatedActualTypeArguments();
-        Map<Object, Object> parsed = InstanceCreators.find(Reflections.getClass(input)).create();
+        Map<Object, Object> parsed = Instances.create(Reflections.getClass(input));
         input.forEach((key, value) -> parsed.put(
                 AnnotationParser.parse(key, annotatedActualTypeArguments[0]),
                 AnnotationParser.parse(value, annotatedActualTypeArguments[1])

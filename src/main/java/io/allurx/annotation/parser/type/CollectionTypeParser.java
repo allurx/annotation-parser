@@ -16,7 +16,7 @@
 package io.allurx.annotation.parser.type;
 
 import io.allurx.annotation.parser.AnnotationParser;
-import io.allurx.annotation.parser.util.InstanceCreators;
+import io.allurx.annotation.parser.util.Instances;
 import io.allurx.annotation.parser.util.Reflections;
 
 import java.lang.reflect.AnnotatedParameterizedType;
@@ -41,7 +41,7 @@ public class CollectionTypeParser implements TypeParser<Collection<Object>, Anno
     public Collection<Object> parse(Collection<Object> input, AnnotatedParameterizedType annotatedParameterizedType) {
         return input.stream()
                 .map(o -> AnnotationParser.parse(o, annotatedParameterizedType.getAnnotatedActualTypeArguments()[0]))
-                .collect(Collectors.toCollection(() -> InstanceCreators.find(Reflections.getClass(input)).create()));
+                .collect(Collectors.toCollection(() -> Instances.create(Reflections.getClass(input))));
     }
 
     @Override

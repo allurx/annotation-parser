@@ -18,7 +18,7 @@ package io.allurx.annotation.parser.type;
 import io.allurx.annotation.parser.handler.AnnotationHandler;
 import io.allurx.annotation.parser.handler.Location;
 import io.allurx.annotation.parser.handler.Parse;
-import io.allurx.annotation.parser.util.InstanceCreators;
+import io.allurx.annotation.parser.util.Instances;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
@@ -75,7 +75,7 @@ public class ObjectTypeParser implements TypeParser<Object, AnnotatedType> {
      */
     private ParsedInfo parseAnnotation(Object input, AnnotatedType annotatedType, Parse parse) {
         @SuppressWarnings("unchecked")
-        var annotationHandler = (AnnotationHandler<Object, Annotation, Object>) InstanceCreators.find(parse.handler()).create();
+        var annotationHandler = (AnnotationHandler<Object, Annotation, Object>) Instances.create(parse.handler());
         var annotations = new ArrayList<Annotation>();
         for (Location location : parse.location()) {
             switch (location) {

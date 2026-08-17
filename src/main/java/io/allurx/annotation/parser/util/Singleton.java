@@ -23,8 +23,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that only one instance of the annotated class can be created
- * during the runtime of an {@link InstanceCreator}. The conditions for this
+ * Indicates that only one instance of the annotated class is returned by {@link Instances}
+ * until it is removed from {@link Singletons}. The conditions for this
  * are as follows:
  * <ul>
  *     <li>The annotation is <b>present</b> on the {@link Class} itself.</li>
@@ -37,8 +37,8 @@ import java.lang.annotation.Target;
  * classes; interfaces do not inherit annotations from other interfaces.</p>
  *
  * @author allurx
- * @see InstanceCreator
- * @see InstanceCreators
+ * @see Instances
+ * @see Singletons
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

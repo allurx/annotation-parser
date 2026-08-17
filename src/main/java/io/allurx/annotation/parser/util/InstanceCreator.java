@@ -45,7 +45,8 @@ package io.allurx.annotation.parser.util;
  *
  * @param <T> the type of the instance
  * @author allurx
- * @see Singleton
+ * @see InstanceCreators
+ * @see Instances
  */
 @FunctionalInterface
 public interface InstanceCreator<T> {
