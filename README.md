@@ -111,9 +111,9 @@ module com.example.app {
 Parsing uses Java's `AnnotatedType` metadata and an ordered set of type parsers.
 For background on the reflection types involved:
 
-- [Java Type](https://www.zyc.red/Java/Reflection/Type)
-- [Java AnnotatedType](https://www.zyc.red/Java/Reflection/AnnotatedType)
-- [Java AnnotatedElement](https://www.zyc.red/Java/Reflection/AnnotatedElement)
+- [Java Type](https://www.allurx.io/Java/Reflection/Type)
+- [Java AnnotatedType](https://www.allurx.io/Java/Reflection/AnnotatedType)
+- [Java AnnotatedElement](https://www.allurx.io/Java/Reflection/AnnotatedElement)
 
 ## Build and CI/CD
 
