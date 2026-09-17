@@ -154,7 +154,7 @@ public final class InstanceCreators {
                         .<InstanceCreator<T>>map(constructor -> () -> Reflections.newInstance(constructor, EMPTY_MAP)))
                 .orElse()
                 .map(c -> Optional.<InstanceCreator<T>>empty())
-                .get();
+                .getAsType();
     }
 
 }

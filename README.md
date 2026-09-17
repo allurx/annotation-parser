@@ -1,6 +1,6 @@
 # annotation-parser
 
-**A library for parsing custom annotations in any data structures.**
+**A Java library for processing custom type-use annotations in objects, collections, maps, and reference arrays.**
 
 ## JDK Version
 
@@ -8,17 +8,19 @@
 
 ## Maven Dependency
 
-```xml
-<dependency>
-    <groupId>io.allurx</groupId>
-    <artifactId>annotation-parser</artifactId>
-    <version>${latest version}</version>
-</dependency>
-```
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;io.allurx&lt;/groupId&gt;
+    &lt;artifactId&gt;annotation-parser&lt;/artifactId&gt;
+    &lt;version&gt;<a href="https://central.sonatype.com/artifact/io.allurx/annotation-parser">LATEST_VERSION</a>&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+
+Replace `LATEST_VERSION` with a version from the linked Maven Central page.
 
 ## Example
 
 ### Custom Annotation
+
+Use `@Parse` to associate a runtime type-use annotation with its handler.
 
 ```java
 @Target(ElementType.TYPE_USE)
@@ -43,7 +45,10 @@ public class EraseStringAnnotationHandler implements AnnotationHandler<String, E
 
 ### Parsing with AnnotationParser
 
-You can parse the annotation in any data structure using the `AnnotationParser`. Here are some examples:
+Capture the annotated type with `AnnotatedTypeToken` from
+`io.allurx.kit.base.reflection`, then pass it to `AnnotationParser.parse`.
+Use `@Cascade` on an object type to process its fields or record components;
+nested object types that need traversal also require `@Cascade`.
 
 ```java
 void parse() {
@@ -80,13 +85,40 @@ void parse() {
 }
 ```
 
+### Notes
+
+- Use the value returned by `parse()`; parsing may create a new object or container.
+- Collection and map results use the input's concrete implementation class, which
+  must support creating and filling a result instance. If its constructors are
+  insufficient, register an `InstanceCreator` through
+  [InstanceCreators](src/main/java/io/allurx/annotation/parser/util/InstanceCreators.java).
+
+## JPMS
+
+For a named module, require `io.allurx.annotation.parser`. Open model packages
+when parsing non-public members, and handler packages when their constructors
+need reflective access. Replace the example module and package names below:
+
+```java
+module com.example.app {
+    requires io.allurx.annotation.parser;
+    opens com.example.model to io.allurx.annotation.parser;
+}
+```
+
 ## Principles
 
-The `annotation-parser` library is built on the `AnnotatedType` type system introduced in JDK 1.8 and utilizes the Chain of Responsibility design pattern to parse custom annotations in arbitrary data structures. A thorough understanding of Java's `Type` and `AnnotatedType` systems is essential for grasping the underlying implementation principles. For deeper insights, consider reading the following articles:
+Parsing uses Java's `AnnotatedType` metadata and an ordered set of type parsers.
+For background on the reflection types involved:
 
 - [Java Type](https://www.zyc.red/Java/Reflection/Type)
 - [Java AnnotatedType](https://www.zyc.red/Java/Reflection/AnnotatedType)
 - [Java AnnotatedElement](https://www.zyc.red/Java/Reflection/AnnotatedElement)
+
+## Build and CI/CD
+
+Run `mvn -B -ntp clean verify` from the repository root. See
+[CI and releases](docs/ci-cd.md) for local verification, CI and release steps.
 
 ## License
 
