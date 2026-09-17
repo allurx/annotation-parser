@@ -1,10 +1,6 @@
 # annotation-parser
 
-**A Java library for processing custom type-use annotations in objects, collections, maps, and reference arrays.**
-
-## JDK Version
-
-**JDK 25**
+A Java library for processing custom type-use annotations in objects, collections, maps, and reference arrays. Requires JDK 25.
 
 ## Maven Dependency
 
@@ -14,7 +10,7 @@
     &lt;version&gt;<a href="https://central.sonatype.com/artifact/io.allurx/annotation-parser">LATEST_VERSION</a>&lt;/version&gt;
 &lt;/dependency&gt;</code></pre>
 
-Replace `LATEST_VERSION` with a version from the linked Maven Central page.
+Replace `LATEST_VERSION` with a published version from the link.
 
 ## Example
 
@@ -31,7 +27,7 @@ public @interface EraseString {
 }
 ```
 
-### Writing an Annotation Handler
+### Annotation Handler
 
 ```java
 public class EraseStringAnnotationHandler implements AnnotationHandler<String, EraseString, String> {
@@ -43,12 +39,12 @@ public class EraseStringAnnotationHandler implements AnnotationHandler<String, E
 }
 ```
 
-### Parsing with AnnotationParser
+### Parsing
 
-Capture the annotated type with `AnnotatedTypeToken` from
-`io.allurx.kit.base.reflection`, then pass it to `AnnotationParser.parse`.
-Use `@Cascade` on an object type to process its fields or record components;
-nested object types that need traversal also require `@Cascade`.
+Capture the annotated type with `io.allurx.kit.base.reflection.AnnotatedTypeToken`,
+then pass it to `AnnotationParser.parse`. Mark object types with `@Cascade` to
+traverse their fields or record components, including each nested type that needs
+traversal.
 
 ```java
 void parse() {
@@ -88,16 +84,16 @@ void parse() {
 ### Notes
 
 - Use the value returned by `parse()`; parsing may create a new object or container.
-- Collection and map results use the input's concrete implementation class, which
-  must support creating and filling a result instance. If its constructors are
-  insufficient, register an `InstanceCreator` through
+- Collection and map results keep the input's concrete implementation class. It
+  must support creating and filling the result; if its constructors are insufficient,
+  register an `InstanceCreator` through
   [InstanceCreators](src/main/java/io/allurx/annotation/parser/util/InstanceCreators.java).
 
 ## JPMS
 
-For a named module, require `io.allurx.annotation.parser`. Open model packages
-when parsing non-public members, and handler packages when their constructors
-need reflective access. Replace the example module and package names below:
+Require `io.allurx.annotation.parser` in named modules. Open model packages when
+parsing non-public members, and handler packages as needed for reflective
+constructor access. Replace the example module and package names:
 
 ```java
 module com.example.app {
@@ -106,20 +102,31 @@ module com.example.app {
 }
 ```
 
-## Principles
+## Reflection
 
-Parsing uses Java's `AnnotatedType` metadata and an ordered set of type parsers.
-For background on the reflection types involved:
+Parsing uses `AnnotatedType` metadata and an ordered set of type parsers.
+Background on the reflection types:
 
 - [Java Type](https://www.allurx.io/Java/Reflection/Type)
 - [Java AnnotatedType](https://www.allurx.io/Java/Reflection/AnnotatedType)
 - [Java AnnotatedElement](https://www.allurx.io/Java/Reflection/AnnotatedElement)
 
-## Build and CI/CD
+## Build
 
-Run `mvn -B -ntp clean verify` from the repository root. See
-[CI and releases](docs/ci-cd.md) for local verification, CI and release steps.
+Build and test with Maven from the repository root:
+
+```sh
+mvn -B -ntp clean verify
+```
+
+Build sources and Javadoc without signing or publishing:
+
+```sh
+mvn -B -ntp -Prelease "-Dgpg.skip=true" clean verify
+```
+
+CI and releases use [allurx-build](https://github.com/allurx/allurx-build).
 
 ## License
 
-This project is licensed under the [Apache License 2.0](LICENSE.txt).
+[Apache License 2.0](LICENSE.txt).
