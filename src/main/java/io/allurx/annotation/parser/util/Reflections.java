@@ -57,7 +57,7 @@ public final class Reflections {
                 .map(clazz -> Conditional.of(Stream.of(clazz.getDeclaredFields()).collect(Collectors.toList()))
                         .when(inherited)
                         .consume(fields -> fields.addAll(listFields(clazz.getSuperclass(), true)))
-                        .get())
+                        .<List<Field>>getAsType())
                 .orElseGet(ArrayList::new);
     }
 
