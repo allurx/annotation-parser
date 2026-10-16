@@ -125,7 +125,7 @@ Build sources and Javadoc without signing or publishing:
 mvn -B -ntp -Prelease "-Dgpg.skip=true" clean verify
 ```
 
-CI and releases use [allurx-build](https://github.com/allurx/allurx-build).
+CI and releases use [allurx-build](https://github.com/allurx/allurx-build). Dependency updates use the shared [Renovate policy](https://github.com/allurx/allurx-build/blob/main/docs/dependency-updates.md) and target `dev`.
 
 ## License
 
