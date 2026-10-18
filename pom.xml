@@ -10,7 +10,7 @@ SPDX-License-Identifier: Apache-2.0
     <parent>
         <groupId>io.allurx</groupId>
         <artifactId>maven-parent</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.0</version>
         <relativePath/>
     </parent>
 
@@ -25,14 +25,6 @@ SPDX-License-Identifier: Apache-2.0
         <kit-base.version>3.0.2</kit-base.version>
     </properties>
 
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
     <scm>
         <url>https://github.com/allurx/annotation-parser</url>
         <connection>scm:git:https://github.com/allurx/annotation-parser.git</connection>
@@ -43,14 +35,6 @@ SPDX-License-Identifier: Apache-2.0
         <system>GitHub Issues</system>
         <url>https://github.com/allurx/annotation-parser/issues</url>
     </issueManagement>
-
-    <developers>
-        <developer>
-            <name>allurx</name>
-            <email>allurx.zyc@gmail.com</email>
-            <url>https://www.allurx.io</url>
-        </developer>
-    </developers>
 
     <dependencies>
         <dependency>
