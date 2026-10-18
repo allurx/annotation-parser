@@ -1,5 +1,7 @@
 # annotation-parser
 
+English | [简体中文](README.zh-CN.md)
+
 A Java library for processing custom type-use annotations in objects, collections, maps, and reference arrays. Requires JDK 25.
 
 ## Maven Dependency
