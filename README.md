@@ -107,9 +107,9 @@ module com.example.app {
 Parsing uses `AnnotatedType` metadata and an ordered set of type parsers.
 Background on the reflection types:
 
-- [Java Type](https://www.allurx.io/Java/Reflection/Type)
-- [Java AnnotatedType](https://www.allurx.io/Java/Reflection/AnnotatedType)
-- [Java AnnotatedElement](https://www.allurx.io/Java/Reflection/AnnotatedElement)
+- [Java Type](https://blog.allurx.io/reflection-types/)
+- [Java AnnotatedType](https://blog.allurx.io/annotated-type/)
+- [Java AnnotatedElement](https://blog.allurx.io/annotated-element/)
 
 ## Build
 
